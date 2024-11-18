@@ -127,6 +127,7 @@ class Node:
         """Vote for a candidate if the candidate's term is greater than the current term
         and the candidate's log is at least as up-to-date as this node's log."""
         with self.lock:
+            self.refresh_log_from_file()
             print(f"Received vote request from {candidate} for term {term} with last_log_term {last_log_term}, last_log_index {last_log_index}")
 
             if term < self.current_term:
