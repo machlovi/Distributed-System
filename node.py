@@ -230,14 +230,31 @@ class Node:
         while self.running:
             with self.lock:
                 
-                if not self.in_cooldown and (time.time() - self.last_heartbeat_time > self.election_timeout):
+                # if not self.in_cooldown and (time.time() - self.last_heartbeat_time > self.election_timeout):
+                if (time.time() - self.last_heartbeat_time > self.election_timeout):
+
                     if self.role == "follower":
                         print(f"{self.name} timeout, starting election.")
                         self.last_heartbeat_time = time.time()
                         self.request_vote()
                         self.election_timeout = random.uniform(2.0, 20.0)  # Adjust this range as needed
                         print(f"election timeout {self.election_timeout}")
-    
+
+    def detect_leader_failure(self):
+        """Actively check for leader failure across the cluster."""
+        while self.running:
+            for peer, (ip, port) in self.peers.items():
+                try:
+                    with xmlrpc.client.ServerProxy(f"http://{ip}:{port}/") as client:
+                        # Check if any node believes the leader is down
+                        if not client.is_leader():
+                            # Trigger election if leader is confirmed down
+                            self.request_vote()
+                            break
+                except ConnectionRefusedError:
+                    print(f"Connection to {peer} failed.")
+            time.sleep(1)  # Check periodically
+        
     def load_log_from_file(self):
         """Load the log from a file at startup or initialize to an empty log if the file is missing."""
         log = []
