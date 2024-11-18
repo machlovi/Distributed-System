@@ -5,19 +5,19 @@ import time
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Define IPs and ports for each node in the cluster
-NODES = {
-    "node1": "http://localhost:8000/",
-    "node2": "http://localhost:8001/",
-    "node3": "http://localhost:8002/"
-}
-
-
-# # Correct format for NODES dictionary in client.py
 # NODES = {
-#     "node1": "http://10.128.0.4:17000/",
-#     "node2": "http://10.128.0.6:17001/",
-#     "node3": "http://10.128.0.5:17002/"
+#     "node1": "http://localhost:8000/",
+#     "node2": "http://localhost:8001/",
+#     "node3": "http://localhost:8002/"
 # }
+
+
+# Correct format for NODES dictionary in client.py
+NODES = {
+    "node1": "http://10.128.0.4:17000/",
+    "node2": "http://10.128.0.6:17001/",
+    "node3": "http://10.128.0.5:17002/"
+}
 
 
 def find_leader(current_leader=None):

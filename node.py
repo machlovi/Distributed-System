@@ -12,17 +12,17 @@ import logging
 
 
 # Define IPs and ports for each node in the cluster
-NODES = {
-    "node1": ("localhost", 8000),
-    "node2": ("localhost", 8001),
-    "node3": ("localhost", 8002)
-}
-
 # NODES = {
-#     "node1": ("10.128.0.4", 17000),
-#     "node2": ("10.128.0.6", 17001),
-#     "node3": ("10.128.0.5", 17002)
+#     "node1": ("localhost", 8000),
+#     "node2": ("localhost", 8001),
+#     "node3": ("localhost", 8002)
 # }
+
+NODES = {
+    "node1": ("10.128.0.4", 17000),
+    "node2": ("10.128.0.6", 17001),
+    "node3": ("10.128.0.5", 17002)
+}
 
 
 # server = SimpleXMLRPCServer(("0.0.0.0", NODES['node1'][1]), allow_none=True)  # Adjust for each node's port
@@ -459,8 +459,8 @@ class Node:
         """Run the XML-RPC server to handle incoming requests.""" 
 
        
-        with QuietXMLRPCServer((self.ip, self.port), allow_none=True) as server:
-        # with QuietXMLRPCServer(("0.0.0.0", self.port), allow_none=True) as server:
+        # with QuietXMLRPCServer((self.ip, self.port), allow_none=True) as server:
+        with QuietXMLRPCServer(("0.0.0.0", self.port), allow_none=True) as server:
 
 
             server.register_instance(self)
