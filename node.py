@@ -8,6 +8,8 @@ import threading
 import time
 import random
 import argparse
+import logging
+
 
 # Define IPs and ports for each node in the cluster
 NODES = {
@@ -65,6 +67,7 @@ class Node:
         self.votes_received = 0
         self.current_term = 0
         self.last_heartbeat_time = time.time()
+        self.voted_for = None 
 
         # Initialize log, next_index, and match_index for log replication
         # self.log = []  # List of log entries
@@ -89,35 +92,7 @@ class Node:
         self.last_election_time = 0  # Last time the node participated in an election
         self.in_cooldown = False  # Flag to indicate cooldown state
 
- 
-    # def request_vote(self):
-    #     """Request votes from peers to become a candidate."""
-    #     self.votes_received = 1
-    #     self.current_term += 1
-    #     self.role = "candidate"
-    #     print(f"{self.name} is requesting votes for term {self.current_term}")
 
-    #     for peer, (ip, port) in self.peers.items():
-    #         try:
-    #             with xmlrpc.client.ServerProxy(f"http://{ip}:{port}/") as client:
-    #                 response = client.vote(self.name, self.current_term)
-    #                 if response:
-    #                     self.votes_received += 1
-    #         except ConnectionRefusedError:
-    #             print(f"Connection to {peer} failed.")
-
-    #     # Check if received majority votes
-    #     if self.votes_received > len(self.peers) // 2:
-    #         self.start_leader()
-
-
-    # def vote(self, candidate, term):
-    #     """Vote for a candidate if the candidate's term is greater than the current term."""
-    #     if term > self.current_term:
-    #         self.current_term = term
-    #         print(f"{self.name} voted for {candidate} for term {term}")
-    #         return True
-    #     return False
 
     def request_vote(self):
         """Request votes from peers to become a candidate."""
@@ -129,11 +104,14 @@ class Node:
         # Get the term and index of this node's last log entry
         last_log_index = len(self.log) - 1
         last_log_term = self.log[last_log_index].term if self.log else 0
+        self.election_timeout = random.uniform(2.0, 20.0)
+        
 
         for peer, (ip, port) in self.peers.items():
             try:
                 with xmlrpc.client.ServerProxy(f"http://{ip}:{port}/") as client:
                     # Pass candidate's term, last log term, and last log index
+                    print(f"time out set for {self.name} to {self.election_timeout} ")
                     response = client.vote(self.name, self.current_term, last_log_term, last_log_index)
                     if response:
                         self.votes_received += 1
@@ -144,25 +122,36 @@ class Node:
         if self.votes_received > len(self.peers) // 2:
             self.start_leader()
 
-    def vote(self, candidate, term, last_log_term, last_log_index):
-        """Vote for a candidate if the candidate's term is greater than the current term and candidate's log is up-to-date."""
-        if term < self.current_term:
-            return False  # Reject vote if candidate's term is outdated
-
-        # Check if candidate's log is at least as up-to-date as the follower’s log
-        my_last_log_index = len(self.log) - 1
-        my_last_log_term = self.log[my_last_log_index].term if self.log else 0
-
-        # Log is more up-to-date if it has a higher term or, if terms are the same, a longer log
-        if (last_log_term < my_last_log_term) or (last_log_term == my_last_log_term and last_log_index < my_last_log_index):
-            return False  # Candidate's log is not up-to-date, reject the vote
-
-        # Candidate’s term is acceptable and log is up-to-date; grant vote
-        self.current_term = term
-        print(f"{self.name} voted for {candidate} for term {term}")
-        return True
-
     
+    def vote(self, candidate, term, last_log_term, last_log_index):
+        """Vote for a candidate if the candidate's term is greater than the current term
+        and the candidate's log is at least as up-to-date as this node's log."""
+        with self.lock:
+            print(f"Received vote request from {candidate} for term {term} with last_log_term {last_log_term}, last_log_index {last_log_index}")
+
+            if term < self.current_term:
+                print(f"Vote denied for {candidate}: candidate's term {term} is less than current term {self.current_term}")
+                return False
+
+            my_last_log_index = len(self.log) - 1
+            my_last_log_term = self.log[my_last_log_index].term if self.log else 0
+
+            if (last_log_term < my_last_log_term) or (last_log_term == my_last_log_term and last_log_index < my_last_log_index):
+                print(f"Vote denied for {candidate}: candidate's log is not up-to-date")
+                return False
+
+            if (term > self.current_term) or \
+            (term == self.current_term and not self.voted_for) or \
+            (self.voted_for == candidate):
+                self.current_term = term
+                self.voted_for = candidate
+                self.last_heartbeat_time = time.time()  # Reset the election timeout
+                print(f"Vote granted to {candidate} for term {term}")
+                return True
+
+            print(f"Vote denied for {candidate}: already voted for {self.voted_for} in term {self.current_term}")
+            return False
+
 
 
     def start_leader(self):
@@ -176,7 +165,7 @@ class Node:
     def set_heartbeat_interval(self, interval):
         """Set a new heartbeat interval, usually called by the client."""
         self.heartbeat_interval = interval
-        print(f"{self.name} heartbeat interval set to {self.heartbeat_interval} seconds.")
+        # print(f"{self.name} heartbeat interval set to {self.heartbeat_interval} seconds.")
 
 
     def heartbeat(self):
@@ -192,15 +181,6 @@ class Node:
                     print(f"Connection to {peer} failed.")
             time.sleep(self.heartbeat_interval)  # Sleep based on the heartbeat interval
             ##print(self.heartbeat_interval)
-
-
-    def periodic_heartbeat_status_print(self):
-        """Prints the leader's heartbeat status at the set interval."""
-        while self.is_leader_flag:
-            print(f"Status: {self.name} is leader, current term: {self.current_term}")
-            time.sleep(self.status_print_interval)
-
-
 
     def receive_heartbeat(self, leader_term):
         """Process a heartbeat received from the leader."""
@@ -239,8 +219,6 @@ class Node:
     def is_leader(self):
         """Check if the node is the leader."""
         return self.is_leader_flag
-    
-    
 
 
     def get_heartbeat_interval(self):
@@ -253,15 +231,17 @@ class Node:
             with self.lock:
                 
                 if not self.in_cooldown and (time.time() - self.last_heartbeat_time > self.election_timeout):
-
-                # if not self.in_cooldown and (time.time() - self.last_heartbeat_time > self.election_timeout):
-                    # print(f"leader sent heart beat {self.last_heartbeat_time}")
                     if self.role == "follower":
                         print(f"{self.name} timeout, starting election.")
                         self.last_heartbeat_time = time.time()
                         self.request_vote()
                         self.election_timeout = random.uniform(2.0, 20.0)  # Adjust this range as needed
                         print(f"election timeout {self.election_timeout}")
+
+
+
+
+
     
     def load_log_from_file(self):
         """Load the log from a file at startup or initialize to an empty log if the file is missing."""
@@ -491,7 +471,9 @@ class Node:
 
 
             server.register_instance(self)
-            print(f"{self.name} is listening on {self.ip}:{self.port}")
+            # server.register_function(self.delete_log_file)
+            # print(f"{self.name} is listening on {self.ip}:{self.port}")
+            logging.info(f"{self.name} is listening on {self.ip}:{self.port}")
             try:
                 while self.running:
                     server.handle_request()
@@ -500,8 +482,6 @@ class Node:
                 self.running = False
             finally:
                 print(f"{self.name} has shut down cleanly.")  
-
-    
 
 
     def start_leader(self):
@@ -579,6 +559,20 @@ class Node:
         # Check if entries can be committed after successful replication
         self.check_commit_index()
         return True
+    
+
+    def delete_log_file(self):
+        """Deletes the log file for this node."""
+        try:
+            os.remove(self.LOG_FILE)
+            logging.info(f"Log file {self.LOG_FILE} deleted successfully.")
+            return True
+        except FileNotFoundError:
+            logging.error("Log file not found.")
+            return False
+        except Exception as e:
+            logging.error(f"Error while deleting log file: {e}")
+            return False
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run a Raft Node.")

@@ -38,6 +38,25 @@ def find_leader(current_leader=None):
     logging.error("Leader not found after checking all nodes.")
     return None
 
+
+def delete_log_file(node_url):
+    """Sends a request to the specified node to delete its log file."""
+    if node_url:
+        try:
+            with xmlrpc.client.ServerProxy(node_url) as client:
+                result = client.delete_log_file()
+                if result:
+                    logging.info(f"Log file successfully deleted at {node_url}.")
+                else:
+                    logging.error(f"Failed to delete log file at {node_url}.")
+        except Exception as e:
+            logging.error(f"Could not connect to {node_url} to delete log file: {e}")
+    else:
+        logging.warning("No valid node URL provided for log file deletion.")
+
+
+
+
 def set_heartbeat_interval(leader_url):
     """Set the heartbeat interval of the leader temporarily to a new value."""
     new_interval = 40.0  # Desired temporary heartbeat interval in seconds
@@ -46,13 +65,16 @@ def set_heartbeat_interval(leader_url):
             with xmlrpc.client.ServerProxy(leader_url) as client:
                 original_interval = client.get_heartbeat_interval()
                 response = client.set_heartbeat_interval(new_interval)
-                logging.info(f"Heartbeat interval temporarily set to {new_interval} seconds on {leader_url}. Response: {response}")
+                # logging.info(f"Heartbeat interval temporarily set to {new_interval} seconds on {leader_url}. Response: {response}")
                 
 
                 time.sleep(new_interval)
 
                 client.set_heartbeat_interval(original_interval)
-                logging.info(f"Heartbeat interval reset to original value of {original_interval} seconds on {leader_url}.")
+                # logging.info(f"Heartbeat interval reset to original value of {original_interval} seconds on {leader_url}.")
+
+
+                
 
         except Exception as e:
             logging.error(f"Failed to set or reset heartbeat interval on {leader_url}: {e}")
@@ -90,30 +112,33 @@ def submit_values_with_leader_detection():
     while True:
         command = input(
             'To set heartbeat interval enter "1"\n'
-            
-
             'To write values to all nodes through leader enter "2"\n'
-            'To write values to only leader and stimulate a failure  enter "3"\n'
-            # 'To write values to only leader and stimulate a failure  enter "3"\n'
+            'To write values to only leader and stimulate a failure enter "3"\n'
+            'To delete log file of a follower enter "4"\n'
             '(or "exit" to quit): '
         )
 
         if command == "1":
             leader_url = set_heartbeat_interval(leader_url)
-
         elif command == "2":
-            leader_url = write_value_to_leader(leader_url,simulate_failure=False)
-
+            leader_url = write_value_to_leader(leader_url, simulate_failure=False)
         elif command == "3":
-            leader_url=write_value_to_leader(leader_url, simulate_failure=True)
-
+            leader_url = write_value_to_leader(leader_url, simulate_failure=True)
+        elif command == "4":
+            node = input("Enter the node name to delete its log file (node1, node2, node3): ")
+            if node in NODES:
+                delete_log_file(NODES[node])
+            else:
+                logging.warning("Invalid node name. Please enter one of the specified node names.")
         elif command.lower() == "exit":
             logging.info("Exiting.")
             break
-
         else:
-            logging.warning("Invalid command. Please enter '1' to set heartbeat interval, '2' to write values, or 'exit' to quit.")
+            logging.warning("Invalid command.")
 
+        # Re-check leader after operations
+        leader_url = find_leader(leader_url)
+    
         # Check if the leader has changed after each command
         new_leader_url = find_leader(leader_url)
         if new_leader_url != leader_url:
