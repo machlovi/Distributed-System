@@ -80,7 +80,7 @@ class Node:
         self.log = self.load_log_from_file()  # Load existing log entries from file
         self.simulate_replication_failure = False  # Flag for simulating replication failure
 
-        self.election_timeout = random.uniform(2.0, 20.0)
+        self.election_timeout = random.uniform(2.0, 5.0)
        
 
         self.default_heartbeat_interval = 0.1
@@ -104,7 +104,7 @@ class Node:
         # Get the term and index of this node's last log entry
         last_log_index = len(self.log) - 1
         last_log_term = self.log[last_log_index].term if self.log else 0
-        self.election_timeout = random.uniform(2.0, 20.0)
+        self.election_timeout = random.uniform(2.0, 5.0)
         
 
         for peer, (ip, port) in self.peers.items():
@@ -237,7 +237,7 @@ class Node:
                         print(f"{self.name} timeout, starting election.")
                         self.last_heartbeat_time = time.time()
                         self.request_vote()
-                        self.election_timeout = random.uniform(2.0, 20.0)  # Adjust this range as needed
+                        self.election_timeout = random.uniform(2.0, 5.0)  # Adjust this range as needed
                         print(f"election timeout {self.election_timeout}")
 
     def detect_leader_failure(self):
