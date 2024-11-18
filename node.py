@@ -237,11 +237,6 @@ class Node:
                         self.request_vote()
                         self.election_timeout = random.uniform(2.0, 20.0)  # Adjust this range as needed
                         print(f"election timeout {self.election_timeout}")
-
-
-
-
-
     
     def load_log_from_file(self):
         """Load the log from a file at startup or initialize to an empty log if the file is missing."""
@@ -257,9 +252,7 @@ class Node:
             log = []
             print(f"{self.name} log file not found. Starting with an empty log.")
 
-        
         return log
-
 
     def refresh_log_from_file(self):
         """Refresh self.log by reloading from the file if it has been updated."""
