@@ -11,10 +11,25 @@ logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - Coordinator - %(levelname)s - %(message)s',
                     filename='./logs/coordinator_transactions.log')
 
+
+# Custom transport class to support timeout
+class TimeoutTransport(xmlrpc.client.Transport):
+    def __init__(self, timeout=8):
+        self.timeout = timeout
+        super().__init__()
+
+    def make_connection(self, host):
+        connection = super().make_connection(host)
+        connection.timeout = self.timeout  # Set the timeout on the connection
+        return connection
+
+
 class CoordinatorNode:
     def __init__(self, node_id=1, port=8001):
         self.node_id = node_id
         self.port = port
+        self.timeout = 8  # Timeout for each RPC call
+
         
         # Participant configuration with explicit accounts
         self.participants = {
@@ -64,7 +79,8 @@ class CoordinatorNode:
         try:
             for node_id, node_info in self.participants.items():
                 try:
-                    proxy = xmlrpc.client.ServerProxy(f"http://{node_info['host']}:{node_info['port']}")
+                    # proxy = xmlrpc.client.ServerProxy(f"http://{node_info['host']}:{node_info['port']}")
+                    proxy = xmlrpc.client.ServerProxy(f"http://{node_info['host']}:{node_info['port']}",transport=TimeoutTransport(self.timeout))
                     
                     # Check if this node is involved in the transaction
                     if (transaction['source_account'] == node_info['account'] or 
@@ -93,7 +109,9 @@ class CoordinatorNode:
                 commit_results = {}
                 for node_id, node_info in self.participants.items():
                     try:
-                        proxy = xmlrpc.client.ServerProxy(f"http://{node_info['host']}:{node_info['port']}")
+                        proxy = xmlrpc.client.ServerProxy(f"http://{node_info['host']}:{node_info['port']}",transport=TimeoutTransport(self.timeout))
+                        
+
                         
                         # Only commit for nodes involved in transaction
                         if (transaction['source_account'] == node_info['account'] or 
