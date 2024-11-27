@@ -1,17 +1,28 @@
 import os
 import time
 import xmlrpc.client
-from xmlrpc.server import SimpleXMLRPCServer
 import json
 import logging
 import random
 import argparse
-
+from xmlrpc.server import SimpleXMLRPCServer
+from xmlrpc.server import SimpleXMLRPCRequestHandler
 
 # # Configure logging
 # logging.basicConfig(level=logging.DEBUG, 
 #                     format='%(asctime)s - %(levelname)s - %(message)s')  # Simplified format
+class QuietXMLRPCServer(SimpleXMLRPCServer):
+    def __init__(self, *args, **kwargs):
+        # Use the QuietXMLRPCRequestHandler to suppress logging
+        kwargs['requestHandler'] = QuietXMLRPCRequestHandler
+        super().__init__(*args, **kwargs)
 
+
+
+class QuietXMLRPCRequestHandler(SimpleXMLRPCRequestHandler):
+    def log_message(self, format, *args):
+        # Override log_message to suppress all HTTP log messages
+        pass
 
 class AccountManager:
     def __init__(self, account_name, initial_balance):
@@ -42,7 +53,9 @@ class ParticipantNode:
 
         
         # Server setup
-        self.server = SimpleXMLRPCServer(("localhost", port), allow_none=True)
+        # self.server = SimpleXMLRPCServer(("localhost", port), allow_none=True)
+        self.server = QuietXMLRPCServer(("localhost", port), allow_none=True)
+
         # self.server.register_instance(ParticipantNode())
 
         self.server.register_function(self.prepare, "prepare")
@@ -83,9 +96,6 @@ class ParticipantNode:
         print(f"Node {self.node_id}: Prepare phase for transaction: {transaction}")
         
 
-
-
-
         if self.crash_scenario == 'before_response' and self.node_id == 2:
             logging.info(f"Simulating crash for Node {self.node_id} before responding...")
             time.sleep(15)  # Simulate long delay (crash)
@@ -97,7 +107,7 @@ class ParticipantNode:
             transaction['source_account'] != chr(64 + self.node_id)  # 'A' for node 2, 'B' for node 3
 
             logging.info(f"Node {self.node_id}: Not source account, prepared.")
-            print(f"Node {self.node_id}: Not source account, prepared.")
+            # print(f"Node {self.node_id}: Not source account, prepared.")
             return True
         
         # Validate transaction
@@ -235,7 +245,7 @@ def main():
 
     # Set up logging for each participant with unique log files
     logging.basicConfig(level=logging.DEBUG, 
-                        format='%(asctime)s - %(levelname)s - %(message)s',  
+                        format='%(levelname)s - %(message)s',  
                         filename=f'./logs/{participant}_participant_detailed.log')
     
     participant_node = ParticipantNode(node_id=node_id, port=port, initial_balance=initial_balance)
