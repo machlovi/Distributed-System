@@ -11,7 +11,6 @@ logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - Coordinator - %(levelname)s - %(message)s',
                     filename='./logs/coordinator_transactions.log')
 
-
 # Custom transport class to support timeout
 class TimeoutTransport(xmlrpc.client.Transport):
     def __init__(self, timeout=8):
@@ -23,6 +22,15 @@ class TimeoutTransport(xmlrpc.client.Transport):
         connection.timeout = self.timeout  # Set the timeout on the connection
         return connection
 
+def load_transaction_state():
+    """Load the persisted transaction state from a file."""
+    if os.path.exists('transaction_state.json'):
+        with open('transaction_state.json', 'r') as f:
+            state = json.load(f)
+            logging.info(f"Transaction state loaded: {state}")
+            return state
+    return None
+
 
 class CoordinatorNode:
     def __init__(self, node_id=1, port=8001):
@@ -30,17 +38,42 @@ class CoordinatorNode:
         self.port = port
         self.timeout = 8  # Timeout for each RPC call
 
-        
-        # Participant configuration with explicit accounts
-        self.participants = {
-            2: {'host': 'localhost', 'port': 8002, 'account': 'A'},
-            3: {'host': 'localhost', 'port': 8003, 'account': 'B'}
-        }
-        
+        # # Participant configuration with explicit accounts
+        # self.participants = {
+        #     2: {'host': 'localhost', 'port': 8002, 'account': 'A'},
+        #     3: {'host': 'localhost', 'port': 8003, 'account': 'B'}
+        # }
+
+        # Transaction state storage path
+        self.transaction_log_path = './logs/transactions_log.json'
+        self.transaction_state = {}
+
+        # Load existing transaction state if available
+        if os.path.exists(self.transaction_log_path):
+            with open(self.transaction_log_path, 'r') as f:
+                self.transaction_state = json.load(f)
+
+
+                # Load the last known transaction state if available
+        saved_state = load_transaction_state()
+
+        if saved_state:
+            self.transaction_state = saved_state
+            logging.info("Loaded previous transaction state. Resuming...")
+            # Handle recovery logic
+            if saved_state['status'] == 'prepared':
+                logging.info("Recovering prepared transaction. Proceeding to commit.")
+                self._commit_transaction(saved_state['transaction'])
+        else:
+            self.transaction_state = {}
+
         # Server setup
         self.server = SimpleXMLRPCServer(("localhost", port), allow_none=True)
+        # self.server = QuietXMLRPCServer(("localhost", port), allow_none=True)
+
         self.server.register_function(self.start_transaction, "start_transaction")
-        self.server.register_function(self.start_bonus_transaction, "start_bonus_transaction")
+        self.server.register_function(self.simulate_coordinator_crash, "simulate_coordinator_crash")
+        self.server.register_function(self.recover_from_crash,"recover_from_crash")
     
     def _get_account_balance(self, account):
         """
@@ -56,14 +89,21 @@ class CoordinatorNode:
                     return None
         return None
     
+    def _save_transaction_state(self):
+        """
+        Save the current transaction state to a file
+        """
+        with open(self.transaction_log_path, 'w') as f:
+            json.dump(self.transaction_state, f)
+
+
     def start_transaction(self, transaction):
         """
         Standard money transfer transaction
         """
         logging.info(f"Starting standard transaction: {transaction}")
         print(f"Coordinator: Starting standard transaction: {transaction}")
-        
-        # Validate transaction
+
         source_balance = self._get_account_balance(transaction['source_account'])
         if source_balance is None:
             logging.error("Unable to retrieve source account balance")
@@ -79,8 +119,7 @@ class CoordinatorNode:
         try:
             for node_id, node_info in self.participants.items():
                 try:
-                    # proxy = xmlrpc.client.ServerProxy(f"http://{node_info['host']}:{node_info['port']}")
-                    proxy = xmlrpc.client.ServerProxy(f"http://{node_info['host']}:{node_info['port']}",transport=TimeoutTransport(self.timeout))
+                    proxy = xmlrpc.client.ServerProxy(f"http://{node_info['host']}:{node_info['port']}", transport=TimeoutTransport(self.timeout))
                     
                     # Check if this node is involved in the transaction
                     if (transaction['source_account'] == node_info['account'] or 
@@ -109,10 +148,8 @@ class CoordinatorNode:
                 commit_results = {}
                 for node_id, node_info in self.participants.items():
                     try:
-                        proxy = xmlrpc.client.ServerProxy(f"http://{node_info['host']}:{node_info['port']}",transport=TimeoutTransport(self.timeout))
-                        
+                        proxy = xmlrpc.client.ServerProxy(f"http://{node_info['host']}:{node_info['port']}", transport=TimeoutTransport(self.timeout))
 
-                        
                         # Only commit for nodes involved in transaction
                         if (transaction['source_account'] == node_info['account'] or 
                             transaction['destination_account'] == node_info['account']):
@@ -136,6 +173,10 @@ class CoordinatorNode:
                 logging.info(f"Transaction final status: {transaction_success}")
                 print(f"Transaction final status: {transaction_success}")
                 
+                # Save the transaction state for recovery
+                self.transaction_state = {'transaction': transaction, 'status': 'committed' if transaction_success else 'aborted'}
+                self._save_transaction_state()
+
                 return transaction_success
             else:
                 # Prepare phase failed, initiate abort
@@ -149,39 +190,18 @@ class CoordinatorNode:
                     except Exception as e:
                         logging.error(f"Error during abort for Node {node_id}: {e}")
                 
+                self.transaction_state = {'transaction': transaction, 'status': 'aborted'}
+                self._save_transaction_state()
                 return False
         
+  
         except Exception as e:
-            logging.critical(f"Unexpected error in transaction: {e}")
-            print(f"Unexpected error in transaction: {e}")
-            return False
-    
-    def start_bonus_transaction(self, account):
-        """
-        Bonus transaction: 20% bonus to specified account
-        """
-        logging.info(f"Starting bonus transaction for account: {account}")
-        print(f"Coordinator: Starting bonus transaction for account: {account}")
+                    logging.critical(f"Unexpected error in transaction: {e}")
+                    self.transaction_state = {'transaction': transaction, 'status': 'aborted'}
+                    self._save_transaction_state()
+                    return False
         
-        # Get current balance
-        current_balance = self._get_account_balance(account)
-        if current_balance is None:
-            logging.error("Unable to retrieve account balance")
-            return False
-        
-        # Calculate bonus
-        bonus_amount = current_balance * 0.2
-        
-        # Prepare bonus transaction
-        bonus_transaction = {
-            'source_account': account,
-            'destination_account': 'B' if account == 'A' else 'A',
-            'amount': bonus_amount
-        }
-        
-        # Use standard transaction method for bonus
-        return self.start_transaction(bonus_transaction)
-    
+
     def start_server(self):
         logging.info(f"Coordinator Node {self.node_id} starting on port {self.port}")
         print(f"Coordinator Node {self.node_id} starting on port {self.port}")

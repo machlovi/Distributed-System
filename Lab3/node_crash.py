@@ -38,33 +38,44 @@ class TimeoutTransport(xmlrpc.client.Transport):
         connection.timeout = self.timeout  # Set the timeout on the connection
         return connection
 
-    
+
+# Function to load the configuration from the config file
+def load_config(config_file):
+    """Load the configuration from a JSON file."""
+    try:
+        with open(config_file, 'r') as f:
+            config_data = json.load(f)
+            return config_data
+    except FileNotFoundError:
+        print(f"Error: Configuration file {config_file} not found.")
+        return None
+    except json.JSONDecodeError:
+        print(f"Error: Failed to decode JSON from {config_file}.")
+        return None
+
+
+config = load_config('./config_file.json')
+# print(config['participants'])
 class CoordinatorNode:
-    def __init__(self, node_id=1, port=8001):
+ 
+
+    def __init__(self, node_id, ip_address, port, timeout, participants):
         self.node_id = node_id
+        self.ip_address = ip_address
         self.port = port
-        self.timeout = 8  # Timeout for each RPC call
+        self.timeout = timeout  # Timeout for each RPC call
+        self.participants = self.load_participants('./config_file.json')  # List of participant configurations
 
-        # Participant configuration with explicit accounts
-        self.participants = {
-            2: {'host': 'localhost', 'port': 8002, 'account': 'A'},
-            3: {'host': 'localhost', 'port': 8003, 'account': 'B'}
-        }
-
+        # Setup the coordinator server
+        # self.server = SimpleXMLRPCServer((self.ip_address, self.port), allow_none=True)
+        # self.server.register_function(self.get_participants, "get_participants")
         # Transaction state storage path
         self.transaction_log_path = './logs/transactions_log.json'
         self.transaction_state = {}
         self.recover = False
 
-        # # Load existing transaction state if available
-        # if os.path.exists(self.transaction_log_path):
-        #     with open(self.transaction_log_path, 'r') as f:
-        #         self.transaction_state = json.load(f)
 
-        
-    
-
-                # Load the last known transaction state if available
+        # Load the last known transaction state if available
         saved_state = self.load_transaction_state()
 
         if saved_state:
@@ -84,7 +95,27 @@ class CoordinatorNode:
         self.server.register_function(self.start_transaction, "start_transaction")
         self.server.register_function(self.simulate_coordinator_crash, "simulate_coordinator_crash")
         self.server.register_function(self.recover_from_crash,"recover_from_crash")
-    
+  
+
+        # Start the server
+
+    def load_participants(self, config_file):
+        """Load participants from a JSON configuration file"""
+        try:
+            with open(config_file, 'r') as file:
+                config = json.load(file)
+                participants = config['participants']
+                # Convert list of participants into a dictionary using 'node_id' as the key
+                participants_dict = {str(participant['node_id']): participant for participant in participants}
+
+                return participants_dict # Return the dictionary of participants
+        except FileNotFoundError:
+            print(f"Error: Configuration file {config_file} not found.")
+            return {}
+        except json.JSONDecodeError:
+            print(f"Error: Failed to decode JSON from {config_file}.")
+            return {}
+
 
     def load_transaction_state(self):
         """Load the persisted transaction state from a file."""
@@ -139,7 +170,6 @@ class CoordinatorNode:
 
 
 
-
     def _get_account_balance(self, account):
         """
         Helper method to get account balance
@@ -147,7 +177,7 @@ class CoordinatorNode:
         for node_id, node_info in self.participants.items():
             if node_info['account'] == account:
                 try:
-                    proxy = xmlrpc.client.ServerProxy(f"http://{node_info['host']}:{node_info['port']}")
+                    proxy = xmlrpc.client.ServerProxy(f"http://{node_info['ip_address']}:{node_info['port']}")
                     return proxy.get_balance()
                 except Exception as e:
                     logging.error(f"Error getting balance for {account}: {e}")
@@ -175,9 +205,6 @@ class CoordinatorNode:
         if transaction.get('recover', False):
             self.recover_from_crash(recover=True)
 
-    
-
-    
 
         source_balance = self._get_account_balance(transaction['source_account'])
         if source_balance is None:
@@ -194,7 +221,7 @@ class CoordinatorNode:
         try:
             for node_id, node_info in self.participants.items():
                 try:
-                    proxy = xmlrpc.client.ServerProxy(f"http://{node_info['host']}:{node_info['port']}", transport=TimeoutTransport(self.timeout))
+                    proxy = xmlrpc.client.ServerProxy(f"http://{node_info['ip_address']}:{node_info['port']}", transport=TimeoutTransport(self.timeout))
                     
                     # Check if this node is involved in the transaction
                     if (transaction['source_account'] == node_info['account'] or 
@@ -230,7 +257,7 @@ class CoordinatorNode:
                 commit_results = {}
                 for node_id, node_info in self.participants.items():
                     try:
-                        proxy = xmlrpc.client.ServerProxy(f"http://{node_info['host']}:{node_info['port']}", transport=TimeoutTransport(self.timeout))
+                        proxy = xmlrpc.client.ServerProxy(f"http://{node_info['ip_address']}:{node_info['port']}", transport=TimeoutTransport(self.timeout))
 
                         # Only commit for nodes involved in transaction
                         if (transaction['source_account'] == node_info['account'] or 
@@ -284,15 +311,48 @@ class CoordinatorNode:
                     return False
         
 
+    # def start_server(self):
+    #     logging.info(f"Coordinator Node {self.node_id} starting on port {self.port}")
+    #     print(f"Coordinator Node {self.node_id} starting on port {self.port}")
+    #     self.server.serve_forever()
+
     def start_server(self):
-        logging.info(f"Coordinator Node {self.node_id} starting on port {self.port}")
-        print(f"Coordinator Node {self.node_id} starting on port {self.port}")
+        # Log the starting message for the coordinator
+        logging.info(f"Coordinator Node {self.node_id} starting on IP {self.ip_address} and port {self.port}")
+        print(f"Coordinator Node {self.node_id} starting on IP {self.ip_address} and port {self.port}")
         self.server.serve_forever()
 
 def main():
     # Create and start coordinator node
-    coordinator = CoordinatorNode()
-    coordinator.start_server()
+    # coordinator = CoordinatorNode()
+    # coordinator.start_server()
+
+       # Load configuration from the config file
+    config = load_config('./config_file.json')
+    if not config:
+        return
+
+    # Get the coordinator configuration
+    coordinator_config = config["coordinator"]
+    coordinator_node_id = coordinator_config["node_id"]
+    coordinator_ip_address = coordinator_config["ip_address"]
+    coordinator_port = coordinator_config["port"]
+    coordinator_timeout = coordinator_config["timeout"]
+
+    # Get participant configurations
+    participants_config = config["participants"]
+
+
+
+    # Start the coordinator node
+    coordinator_node = CoordinatorNode(
+        node_id=coordinator_node_id,
+        ip_address=coordinator_ip_address,
+        port=coordinator_port,
+        timeout=coordinator_timeout,
+        participants=participants_config
+    )
+    coordinator_node.start_server()
 
 if __name__ == "__main__":
     main()
