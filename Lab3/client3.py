@@ -36,7 +36,7 @@ def initiate_transaction(source, destination, amount, simulate_crash=False):
     """
     try:
         # Create a proxy to the coordinator
-        coordinator = xmlrpc.client.ServerProxy("http://localhost:8001")
+        coordinator = xmlrpc.client.ServerProxy(coordinator_url)
         
         # Prepare transaction details
         transaction = {

@@ -65,11 +65,6 @@ class CoordinatorNode:
         self.port = port
         self.timeout = timeout  # Timeout for each RPC call
         self.participants = self.load_participants('./config_file.json')  # List of participant configurations
-
-        # Setup the coordinator server
-        # self.server = SimpleXMLRPCServer((self.ip_address, self.port), allow_none=True)
-        # self.server.register_function(self.get_participants, "get_participants")
-        # Transaction state storage path
         self.transaction_log_path = './logs/transactions_log.json'
         self.transaction_state = {}
         self.recover = False

@@ -8,9 +8,6 @@ import argparse
 from xmlrpc.server import SimpleXMLRPCServer
 from xmlrpc.server import SimpleXMLRPCRequestHandler
 
-# # Configure logging
-# logging.basicConfig(level=logging.DEBUG, 
-#                     format='%(asctime)s - %(levelname)s - %(message)s')  # Simplified format
 class QuietXMLRPCServer(SimpleXMLRPCServer):
     def __init__(self, *args, **kwargs):
         # Use the QuietXMLRPCRequestHandler to suppress logging
@@ -24,6 +21,19 @@ class QuietXMLRPCRequestHandler(SimpleXMLRPCRequestHandler):
         # Override log_message to suppress all HTTP log messages
         pass
 
+def load_config(config_file):
+    """Load the configuration from a JSON file."""
+    try:
+        with open(config_file, 'r') as f:
+            config_data = json.load(f)
+            return config_data
+    except FileNotFoundError:
+        print(f"Error: Configuration file {config_file} not found.")
+        return None
+    except json.JSONDecodeError:
+        print(f"Error: Failed to decode JSON from {config_file}.")
+        return None
+    
 class AccountManager:
     def __init__(self, account_name, initial_balance):
         self.account_name = account_name
@@ -45,16 +55,23 @@ class AccountManager:
 
 class ParticipantNode:
 
-    def __init__(self, node_id, port, initial_balance,crash_scenario=None):
+
+    def __init__(self, node_id, ip_address, port, initial_balance,crash_scenario=None):
         self.node_id = node_id
+        self.ip_address = ip_address
         self.port = port
         self.account_manager = AccountManager(f'node{node_id}', initial_balance)
         self.crash_scenario = crash_scenario  # Added crash scenario
 
+
+        # Set up the server
+        self.server = SimpleXMLRPCServer((self.ip_address, self.port), allow_none=True)
+        self.server.register_function(self.get_balance, "get_balance")
+
         
-        # Server setup
-        # self.server = SimpleXMLRPCServer(("localhost", port), allow_none=True)
-        self.server = QuietXMLRPCServer(("localhost", port), allow_none=True)
+ 
+        # self.server = QuietXMLRPCServer(("localhost", port), allow_none=True)
+
 
         # self.server.register_instance(ParticipantNode())
 
@@ -217,7 +234,7 @@ class ParticipantNode:
 
         # Log the starting message with correct account label
         logging.info(f"Participant Node {self.node_id} Account {account_label} starting on port {self.port}")
-        print(f"Participant Node {self.node_id} Account {account_label} starting on port {self.port}")
+        print(f"Participant Node {self.node_id} Accou {account_label} starting on port {self.port}")
 
         # Start the server
         self.server.serve_forever()
@@ -228,31 +245,46 @@ def main():
     parser.add_argument("node", type=str, choices=["node2", "node3"], help="Node to start (node2 or node3)")
     args = parser.parse_args()
 
-    if args.node == "node2":
-        node_id = 2
-        port = 8002
-        initial_balance = 0  # Example initial balance
-        participant = 'A'
-        
-    elif args.node == "node3":
-        node_id = 3
-        port = 8003
-        initial_balance = 0  # Example initial balance
-        participant = 'B'
-
-    if not os.path.exists('./logs'):
-        os.makedirs('./logs')
-
-    # Set up logging for each participant with unique log files
-    logging.basicConfig(level=logging.DEBUG, 
-                        format='%(levelname)s - %(message)s',  
-                        filename=f'./logs/{participant}_participant_detailed.log')
+    # Load configuration from the config file
+    config = load_config('config_file.json')
+    if not config:
+        return
     
-    participant_node = ParticipantNode(node_id=node_id, port=port, initial_balance=initial_balance)
-    participant_node.start_server()
+    # Get participant configurations from the loaded config
+    participants_config = config["participants"]
 
+    # Look for the specific node requested
+    for participant_config in participants_config:
+        node_id = participant_config["node_id"]
+        # Check if the current participant matches the requested node
+        if args.node == f"node{node_id}":
+            ip_address = participant_config["ip_address"]
+            port = participant_config["port"]
+            initial_balance = participant_config["initial_balance"]
+            account = participant_config["account"]
 
-    
+            # Set up logging for each participant
+            log_dir = './logs'
+            if not os.path.exists(log_dir):
+                os.makedirs(log_dir)
+            
+            log_filename = f'{log_dir}/{account}_participant_detailed.log'
+            logging.basicConfig(level=logging.DEBUG,
+                                format='%(levelname)s - %(message)s',
+                                filename=log_filename)
+            
+            logging.info(f"Starting Participant Node {node_id} - {account}")
+
+            # Start the participant node
+            participant_node = ParticipantNode(
+                node_id=node_id,
+                ip_address=ip_address,
+                port=port,
+                initial_balance=initial_balance
+            )
+            participant_node.start_server()
+
+            break  # Exit after the selected node is started
 
 if __name__ == "__main__":
     main()
