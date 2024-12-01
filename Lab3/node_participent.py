@@ -64,14 +64,9 @@ class ParticipantNode:
         self.crash_scenario = crash_scenario  # Added crash scenario
 
 
-        # Set up the server
-        self.server = SimpleXMLRPCServer((self.ip_address, self.port), allow_none=True)
-        self.server.register_function(self.get_balance, "get_balance")
 
-        
- 
         # self.server = QuietXMLRPCServer(("localhost", port), allow_none=True)
-        self.server = QuietXMLRPCServer(("0.0.0.0", self.port), allow_none=True)
+        self.server = QuietXMLRPCServer(("0.0.0.0", port), allow_none=True)
 
 
 
