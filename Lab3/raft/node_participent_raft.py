@@ -121,7 +121,7 @@ class ParticipantNode:
         print(f"Node {self.node_id}: Prepare phase for transaction: {transaction}")
         
 
-        if self.crash_scenario == 'before_response' and self.node_id == 2:
+        if self.crash_scenario == 'before_response' and self.node_id == 7:
             logging.info(f"Simulating crash for Node {self.node_id} before responding...")
             time.sleep(15)  # Simulate long delay (crash)
 
@@ -153,14 +153,14 @@ class ParticipantNode:
         print(f"Node {self.node_id}: Commit phase for transaction: {transaction}")
 
         # Simulate crash after responding in the 'commit' phase for Node-2
-        if self.crash_scenario == 'after_response' and self.node_id == 2:
+        if self.crash_scenario == 'after_response' and self.node_id == 7:
             logging.info(f"Simulating crash for Node {self.node_id} after responding...")
             time.sleep(15)  # Simulate long delay (crash)
             # return False  # Node-2 fails to commit
 
         try:
             # Step 1: Transfer funds from source account
-            if transaction['source_account'] == 'A' and self.node_id == 2:  # Node 2 is Account A
+            if transaction['source_account'] == 'A' and self.node_id == 7:  # Node 7 is Account A
                 current_balance_A = self.account_manager.get_balance()
                 if current_balance_A < transaction['amount']:
                     logging.error("Insufficient funds for transaction")
@@ -169,10 +169,10 @@ class ParticipantNode:
                 new_balance_A = current_balance_A - transaction['amount']
                 self.account_manager.update_balance(new_balance_A)
                 
-                logging.info(f"Node A (2): Funds transferred. Old Balance: {current_balance_A}, New Balance: {new_balance_A}")
-                print(f"Node A (2): Funds transferred. Old Balance: {current_balance_A}, New Balance: {new_balance_A}")
+                logging.info(f"Node A (7): Funds transferred. Old Balance: {current_balance_A}, New Balance: {new_balance_A}")
+                print(f"Node A (7): Funds transferred. Old Balance: {current_balance_A}, New Balance: {new_balance_A}")
 
-            elif transaction['source_account'] == 'B' and self.node_id == 3:  # Node 3 is Account B
+            elif transaction['source_account'] == 'B' and self.node_id == 8:  # Node 8 is Account B
                 current_balance_B = self.account_manager.get_balance()
                 if current_balance_B < transaction['amount']:
                     logging.error("Insufficient funds for transaction")
@@ -181,44 +181,44 @@ class ParticipantNode:
                 new_balance_B = current_balance_B - transaction['amount']
                 self.account_manager.update_balance(new_balance_B)
 
-                logging.info(f"Node B (3): Funds transferred. Old Balance: {current_balance_B}, New Balance: {new_balance_B}")
-                print(f"Node B (3): Funds transferred. Old Balance: {current_balance_B}, New Balance: {new_balance_B}")
+                logging.info(f"Node B (8): Funds transferred. Old Balance: {current_balance_B}, New Balance: {new_balance_B}")
+                print(f"Node B (8): Funds transferred. Old Balance: {current_balance_B}, New Balance: {new_balance_B}")
 
             # Step 2: Add funds to the destination account
-            if transaction['destination_account'] == 'B' and self.node_id == 3:  # Node 3 is Account B
+            if transaction['destination_account'] == 'B' and self.node_id == 8:  # Node 8 is Account B
                 current_balance_B = self.account_manager.get_balance()
                 new_balance_B = current_balance_B + transaction['amount']
                 self.account_manager.update_balance(new_balance_B)
                 
-                logging.info(f"Node B (3): Funds received. Old Balance: {current_balance_B}, New Balance: {new_balance_B}")
-                print(f"Node B (3): Funds received. Old Balance: {current_balance_B}, New Balance: {new_balance_B}")
+                logging.info(f"Node B (8): Funds received. Old Balance: {current_balance_B}, New Balance: {new_balance_B}")
+                print(f"Node B (8): Funds received. Old Balance: {current_balance_B}, New Balance: {new_balance_B}")
             
-            elif transaction['destination_account'] == 'A' and self.node_id == 2:  # Node 2 is Account A
+            elif transaction['destination_account'] == 'A' and self.node_id == 7:  # Node 7 is Account A
                 current_balance_A = self.account_manager.get_balance()
                 new_balance_A = current_balance_A + transaction['amount']
                 self.account_manager.update_balance(new_balance_A)
 
-                logging.info(f"Node A (2): Funds received. Old Balance: {current_balance_A}, New Balance: {new_balance_A}")
-                print(f"Node A (2): Funds received. Old Balance: {current_balance_A}, New Balance: {new_balance_A}")
+                logging.info(f"Node A (7): Funds received. Old Balance: {current_balance_A}, New Balance: {new_balance_A}")
+                print(f"Node A (7): Funds received. Old Balance: {current_balance_A}, New Balance: {new_balance_A}")
             
             # Step 3: Apply bonus (20%) to both A and B
-            if self.node_id == 2:  # Node 2 is 'A'
+            if self.node_id == 7:  # Node 2 is 'A'
                 current_balance_A = self.account_manager.get_balance()
                 bonus_A = 0.2 * current_balance_A  # 20% bonus
                 new_balance_A = current_balance_A + bonus_A
                 self.account_manager.update_balance(new_balance_A)
                 
-                logging.info(f"Node A (2): Bonus added. Old Balance: {current_balance_A}, New Balance: {new_balance_A}")
-                print(f"Node A (2): Bonus added. Old Balance: {current_balance_A}, New Balance: {new_balance_A}")
+                logging.info(f"Node A (7): Bonus added. Old Balance: {current_balance_A}, New Balance: {new_balance_A}")
+                print(f"Node A (7): Bonus added. Old Balance: {current_balance_A}, New Balance: {new_balance_A}")
             
-            elif self.node_id == 3:  # Node 3 is 'B'
+            elif self.node_id == 8:  # Node 3 is 'B'
                 current_balance_B = self.account_manager.get_balance()
                 bonus_B = 0.2 * current_balance_B  # 20% bonus
                 new_balance_B = current_balance_B + bonus_B
                 self.account_manager.update_balance(new_balance_B)
                 
-                logging.info(f"Node B (3): Bonus added. Old Balance: {current_balance_B}, New Balance: {new_balance_B}")
-                print(f"Node B (3): Bonus added. Old Balance: {current_balance_B}, New Balance: {new_balance_B}")
+                logging.info(f"Node B (8): Bonus added. Old Balance: {current_balance_B}, New Balance: {new_balance_B}")
+                print(f"Node B (8): Bonus added. Old Balance: {current_balance_B}, New Balance: {new_balance_B}")
             
             return True
 
@@ -382,13 +382,13 @@ def set_crash_scenario(proxy, scenario):
     """Set the crash scenario for a participant node."""
     return proxy.set_crash_scenario(scenario)
 
-def start_participant_node_with_balance(config, participant, initial_balance, scenario=None):
+def start_participant_node_with_balance(participant, initial_balance, scenario=None):
     """
     Start a participant node with an initial balance and optional crash scenario.
     """
     participant_ip = participant['ip_address']
     participant_port = participant['port']
-    # print(f'http://{participant_ip}:{participant_port}')
+    print(f'http://{participant_ip}:{participant_port}')
     
     try:
         with xmlrpc.client.ServerProxy(f'http://{participant_ip}:{participant_port}') as proxy:
@@ -399,6 +399,7 @@ def start_participant_node_with_balance(config, participant, initial_balance, sc
     except Exception as e:
         logging.error(f"Error starting participant node: {e}")
         print(f"Client: Error starting participant node: {e}")
+
 
 
 
@@ -460,10 +461,20 @@ def main():
             # Now that the server is running, you can interact with it
             print("Submitting values and getting balance...")
             # submit_values_with_leader_detection()
+                 # Ensure we only initiate balance update for the running node
+                 
+            if args.node == f"node7":
+                # Update balance for the respective running node
+                start_participant_node_with_balance(participant_config, initial_balance=200)
+            else:
+                start_participant_node_with_balance(participant_config, initial_balance=300)
+
+
 
             # Get the balance of the participant node after the transaction
             try:
                 with xmlrpc.client.ServerProxy(f"http://{ip_address}:{port}") as proxy:
+                  
                     current_balance = proxy.get_balance()
                     print(current_balance)
                     value=submit_values_with_leader_detection(cluster,current_balance)
@@ -472,11 +483,15 @@ def main():
                     
                     logging.info(f"Balance for Participant {account}: {current_balance}")
                     print(f"Balance for Participant {account}: {current_balance}")
-                    if value:
+                    if value and args.node == "node7":
                         initiate_transaction('A', 'B', 100)
-                    
-                    else:
-                        logging.error("Nothing to do.")
+                            
+                    # else:
+                    #     logging.error("Nothing to do.")
+
+                    current_balance = proxy.get_balance()
+                    print(f"updating balace {current_balance}")
+                    value=submit_values_with_leader_detection(cluster,current_balance)
 
             except Exception as e:
                 logging.error(f"Error getting balance from participant node: {e}")
@@ -485,21 +500,6 @@ def main():
             server_thread.join()  # Wait for the server thread to finish if needed
             break  # Exit after the selected node is started
 
-    # # Start participant nodes with initial balances
-    # print("\nStarting participant nodes with initial balances.")
-    # for participant in config['participants']:
-    #     start_participant_node_with_balance(config, participant, participant['initial_balance']=value)
-
-    # Initiating transaction scenarios
-    # print("\nInitiating successful transaction scenario.")
-    # initiate_transaction('A', 'B', 100)
-    # time.sleep(5)
-
-    # print("\nInitiating insufficient funds transaction scenario.")
-    # start_participant_node_with_balance(config, config['participants'][0], 90)  # Node 1 with insufficient funds
-    # start_participant_node_with_balance(config, config['participants'][1], 50)  # Node 2 with insufficient funds
-    # initiate_transaction('A', 'B', 100)
-    # time.sleep(5)
 
 if __name__ == "__main__":
     main()
