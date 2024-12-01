@@ -248,11 +248,14 @@ class ParticipantNode:
         self.server.serve_forever()
 
 
-def find_leader(current_leader=None):
+def find_leader(cluster,current_leader=None):
     config = load_config('./config_file.json')
     # print("leader")
     """Attempts to find the leader by querying each node, and reprints the leader if it changes."""
-    for node_info in config['clusterA'].values():  # Assuming config contains the nodes as a list of lists
+    # for node_info in config['clusterA'].values():  # Assuming config contains the nodes as a list of lists
+    for node_info in config[cluster].values():  # Assuming config contains the nodes as a list of lists
+        print(node_info)
+
         # Construct the URL string from node_info (['localhost', 8001] -> 'http://localhost:8001')
         node_url = f"http://{node_info[0]}:{node_info[1]}"
         
@@ -291,6 +294,7 @@ def write_value_to_leader(leader_url, value, simulate_failure=False):
                 # # Submit values
                 response = client.submit_value(value)
                 logging.info(f"Response from leader: {response}")
+                print(response)
                 
                 if "Error" in response:
                     logging.warning("Error submitting value, attempting to find new leader.")
@@ -316,9 +320,9 @@ def start_server_in_thread(participant_node):
     return server_thread
 
 
-def submit_values_with_leader_detection(current_balance):
+def submit_values_with_leader_detection(cluster,current_balance):
     """Main loop for user interactions with the Raft cluster."""
-    leader_url = find_leader()  # Initial leader detection
+    leader_url = find_leader(cluster)  # Initial leader detection
     print("submiting values")
 
     
@@ -326,6 +330,7 @@ def submit_values_with_leader_detection(current_balance):
     leader_url = write_value_to_leader(leader_url,current_balance, simulate_failure=False)
     if leader_url:
         logging.info(f"Leader is at {leader_url}")
+        return True
     else:
         logging.warning("No leader found to write to.")
         return  # Exit if no leader is found
@@ -408,8 +413,18 @@ def main():
     if not config:
         return
 
-    # Get participant configurations from the loaded config
-    participants_config = config["participants"]
+
+
+        # Determine the correct cluster based on the node selected
+    if args.node == "node7" or args.node == "node8":  # Modify if you have more nodes
+        if args.node == "node7":
+            cluster = "clusterA"
+        else:
+            cluster = "clusterB"
+
+        # Get participant configurations from the loaded config
+        participants_config = config["participants"]
+
 
     # Look for the specific node requested
     for participant_config in participants_config:
@@ -451,11 +466,18 @@ def main():
                 with xmlrpc.client.ServerProxy(f"http://{ip_address}:{port}") as proxy:
                     current_balance = proxy.get_balance()
                     print(current_balance)
-                    value=submit_values_with_leader_detection(current_balance)
-                    # response = proxy.submit_value(value)
-                    logging.info(f"Response from leader: {value}")
+                    value=submit_values_with_leader_detection(cluster,current_balance)
+                    print(value)
+        
+                    
                     logging.info(f"Balance for Participant {account}: {current_balance}")
                     print(f"Balance for Participant {account}: {current_balance}")
+                    if value:
+                        initiate_transaction('A', 'B', 100)
+                    
+                    else:
+                        logging.error("Nothing to do.")
+
             except Exception as e:
                 logging.error(f"Error getting balance from participant node: {e}")
 
@@ -463,21 +485,21 @@ def main():
             server_thread.join()  # Wait for the server thread to finish if needed
             break  # Exit after the selected node is started
 
-    # Start participant nodes with initial balances
-    print("\nStarting participant nodes with initial balances.")
-    for participant in config['participants']:
-        start_participant_node_with_balance(config, participant, participant['initial_balance'])
+    # # Start participant nodes with initial balances
+    # print("\nStarting participant nodes with initial balances.")
+    # for participant in config['participants']:
+    #     start_participant_node_with_balance(config, participant, participant['initial_balance']=value)
 
     # Initiating transaction scenarios
-    print("\nInitiating successful transaction scenario.")
-    initiate_transaction('A', 'B', 100)
-    time.sleep(5)
+    # print("\nInitiating successful transaction scenario.")
+    # initiate_transaction('A', 'B', 100)
+    # time.sleep(5)
 
-    print("\nInitiating insufficient funds transaction scenario.")
-    start_participant_node_with_balance(config, config['participants'][0], 90)  # Node 1 with insufficient funds
-    start_participant_node_with_balance(config, config['participants'][1], 50)  # Node 2 with insufficient funds
-    initiate_transaction('A', 'B', 100)
-    time.sleep(5)
+    # print("\nInitiating insufficient funds transaction scenario.")
+    # start_participant_node_with_balance(config, config['participants'][0], 90)  # Node 1 with insufficient funds
+    # start_participant_node_with_balance(config, config['participants'][1], 50)  # Node 2 with insufficient funds
+    # initiate_transaction('A', 'B', 100)
+    # time.sleep(5)
 
 if __name__ == "__main__":
     main()
