@@ -1,23 +1,23 @@
 {
     "coordinator": {
       "node_id": 1,
-      "ip_address": "localhost",
-      "port": 8001,
+      "ip_address": "10.128.0.2",
+      "port": 17001,
       "timeout": 8
     },
 
       "participants": [
           {
               "node_id": 2,
-              "ip_address": "127.0.0.1",
-              "port": 8002,
+              "ip_address": "10.128.0.4",
+              "port": 17002,
               "initial_balance": 100,
               "account": "A"
           },
           {
               "node_id": 3,
-              "ip_address": "127.0.0.1",
-              "port": 8003,
+              "ip_address": "10.128.0.6",
+              "port": 17003,
               "initial_balance": 200,
               "account": "B"
           }
