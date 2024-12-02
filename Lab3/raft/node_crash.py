@@ -85,7 +85,9 @@ class CoordinatorNode:
 
         # Server setup
         # self.server = SimpleXMLRPCServer(("localhost", port), allow_none=True)
-        self.server = QuietXMLRPCServer(("localhost", port), allow_none=True)
+        # self.server = QuietXMLRPCServer(("localhost", port), allow_none=True)
+        self.server = QuietXMLRPCServer(("0.0.0.0", port), allow_none=True)
+
 
         self.server.register_function(self.start_transaction, "start_transaction")
         self.server.register_function(self.simulate_coordinator_crash, "simulate_coordinator_crash")

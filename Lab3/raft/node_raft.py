@@ -499,8 +499,8 @@ class Node:
         """Run the XML-RPC server to handle incoming requests.""" 
 
        
-        with QuietXMLRPCServer((self.ip, self.port), allow_none=True) as server:
-        # with QuietXMLRPCServer(("0.0.0.0", self.port), allow_none=True) as server:
+        # with QuietXMLRPCServer((self.ip, self.port), allow_none=True) as server:
+        with QuietXMLRPCServer(("0.0.0.0", self.port), allow_none=True) as server:
 
 
             server.register_instance(self)

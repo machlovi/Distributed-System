@@ -1,42 +1,41 @@
 
 {
     "clusterA": {
-        "node1": ["localhost", 8001],
-        "node2": ["localhost", 8002],
-        "node3": ["localhost", 8003]
+        "node1": ["10.128.0.3", 17005],
+        "node2": ["10.128.0.5", 17006],
+        "node3": ["10.128.0.7", 17007]
       },
       
       "clusterB": {
-        "node3": ["localhost", 8004],
-        "node4": ["localhost", 8005],
-        "node5": ["localhost", 8006]
+        "node3": ["10.128.0.8", 17008],
+        "node4": ["10.128.0.9", 17009],
+        "node5": ["10.128.0.10", 17010]
       },
       
+      
+      "coordinator": {
+          "node_id": 1,
+          "ip_address": "10.128.0.2",
+          "port": 17001,
+          "timeout": 8
+        },
 
-
-    "coordinator": {
-      "node_id": 1,
-      "ip_address": "localhost",
-      "port": 8007,
-      "timeout": 8
-    },
-
-      "participants": [
-          {
-              "node_id": 7,
-              "ip_address": "localhost",
-              "port": 8008,
-              "initial_balance": 100,
-              "account": "A"
-          },
-          {
-              "node_id": 8,
-              "ip_address": "localhost",
-              "port": 8009,
-              "initial_balance": 200,
-              "account": "B"
-          }
-      ]
+    "participants": [
+      {
+          "node_id": 2,
+          "ip_address": "10.128.0.4",
+          "port": 17002,
+          "initial_balance": 100,
+          "account": "A"
+      },
+      {
+          "node_id": 3,
+          "ip_address": "10.128.0.6",
+          "port": 17003,
+          "initial_balance": 200,
+          "account": "B"
+      }
+  ]
   }
 
 

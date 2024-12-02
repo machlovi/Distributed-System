@@ -6,27 +6,27 @@ import logging
 import random
 import argparse
 from xmlrpc.server import SimpleXMLRPCServer
-# from xmlrpc.server import SimpleXMLRPCRequestHandler
+from xmlrpc.server import SimpleXMLRPCRequestHandler
 
 import threading
 
 
-# class QuietXMLRPCServer(SimpleXMLRPCServer):
-#     def __init__(self, *args, **kwargs):
-#         # Use the QuietXMLRPCRequestHandler to suppress logging
-#         kwargs['requestHandler'] = QuietXMLRPCRequestHandler
-#         super().__init__(*args, **kwargs)
+class QuietXMLRPCServer(SimpleXMLRPCServer):
+    def __init__(self, *args, **kwargs):
+        # Use the QuietXMLRPCRequestHandler to suppress logging
+        kwargs['requestHandler'] = QuietXMLRPCRequestHandler
+        super().__init__(*args, **kwargs)
 
 
 
-# class QuietXMLRPCRequestHandler(SimpleXMLRPCRequestHandler):
-#     def log_message(self, format, *args):
-#         # Override log_message to suppress all HTTP log messages
-#         pass
+class QuietXMLRPCRequestHandler(SimpleXMLRPCRequestHandler):
+    def log_message(self, format, *args):
+        # Override log_message to suppress all HTTP log messages
+        pass
 
-# logging.basicConfig(level=logging.DEBUG, 
-#                     format=' %(levelname)s - %(message)s',  # Simplified format
-#                     filename='./logs/participant_detailed.log')
+logging.basicConfig(level=logging.DEBUG, 
+                    format=' %(levelname)s - %(message)s',  # Simplified format
+                    filename='./logs/participant_detailed.log')
 
 def load_config(config_file):
     """Load the configuration from a JSON file."""
@@ -74,7 +74,9 @@ class ParticipantNode:
 
 
         # Set up the server
-        self.server = SimpleXMLRPCServer((self.ip_address, self.port), allow_none=True)
+        # self.server = SimpleXMLRPCServer((self.ip_address, self.port), allow_none=True)
+        self.server = QuietXMLRPCServer(("0.0.0.0", port), allow_none=True)
+
 
         
  
