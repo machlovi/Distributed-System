@@ -608,77 +608,77 @@ class Node:
             return False
 
 
-def run_node(clustername, node_name):
-    print(f"Cluster: {clustername}, Node: {node_name}")
-    node = Node(node_name, clustername)
+# def run_node(clustername, node_name):
+#     print(f"Cluster: {clustername}, Node: {node_name}")
+#     node = Node(node_name, clustername)
     
-    # Running the server and election logic in separate threads for each node
-    server_thread = threading.Thread(target=node.run_server)
-    election_thread = threading.Thread(target=node.run_election)
+#     # Running the server and election logic in separate threads for each node
+#     server_thread = threading.Thread(target=node.run_server)
+#     election_thread = threading.Thread(target=node.run_election)
     
-    server_thread.start()
-    election_thread.start()
+#     server_thread.start()
+#     election_thread.start()
     
-    # Ensure both threads complete before shutting down
-    server_thread.join()
-    election_thread.join()
-    print(f"{node_name} has shut down cleanly.")
+#     # Ensure both threads complete before shutting down
+#     server_thread.join()
+#     election_thread.join()
+#     print(f"{node_name} has shut down cleanly.")
 
-if __name__ == "__main__":
-    clusters = ['clusterA', 'clusterB']
-    
-    parser = argparse.ArgumentParser(description="Run Raft Nodes for multiple clusters.")
-    parser.add_argument("clustername", choices=clusters, help="The cluster to use.")
-    args = parser.parse_args()
-
-    # Ensure that the selected cluster exists in config_data
-    if args.clustername not in config_data:
-        parser.error(f"Invalid cluster: {args.clustername}")
-
-    # Get the available nodes for the selected cluster
-    available_nodes = list(config_data[args.clustername].keys())
-
-    # Loop through all the available nodes for the selected cluster and start them
-    threads = []
-    for node_name in available_nodes:
-        # Create a new thread for each node in the selected cluster
-        thread = threading.Thread(target=run_node, args=(args.clustername, node_name))
-        thread.start()
-        threads.append(thread)
-    
-    # Wait for all threads to finish
-    for thread in threads:
-        thread.join()
-
-    print("All nodes have shut down cleanly.")
-    
 # if __name__ == "__main__":
 #     clusters = ['clusterA', 'clusterB']
-#     parser = argparse.ArgumentParser(description="Run a Raft Node.")
+    
+#     parser = argparse.ArgumentParser(description="Run Raft Nodes for multiple clusters.")
 #     parser.add_argument("clustername", choices=clusters, help="The cluster to use.")
-#     parser.add_argument("node_name", help="The name of the node to run.")
 #     args = parser.parse_args()
 
-#     # Validate node_name is in the selected cluster
+#     # Ensure that the selected cluster exists in config_data
+#     if args.clustername not in config_data:
+#         parser.error(f"Invalid cluster: {args.clustername}")
+
+#     # Get the available nodes for the selected cluster
 #     available_nodes = list(config_data[args.clustername].keys())
-#     if args.node_name not in available_nodes:
-#         parser.error(f"Invalid node. Available nodes for {args.clustername}: {available_nodes}")
 
-#     print(f"Cluster: {args.clustername}, Node: {args.node_name}")
-#     node = Node(args.node_name, args.clustername)
+#     # Loop through all the available nodes for the selected cluster and start them
+#     threads = []
+#     for node_name in available_nodes:
+#         # Create a new thread for each node in the selected cluster
+#         thread = threading.Thread(target=run_node, args=(args.clustername, node_name))
+#         thread.start()
+#         threads.append(thread)
     
-#     server_thread = threading.Thread(target=node.run_server)
-#     server_thread.start()
+#     # Wait for all threads to finish
+#     for thread in threads:
+#         thread.join()
 
-#     election_thread = threading.Thread(target=node.run_election)
-#     election_thread.start()
+#     print("All nodes have shut down cleanly.")
+    
+if __name__ == "__main__":
+    clusters = ['clusterA', 'clusterB']
+    parser = argparse.ArgumentParser(description="Run a Raft Node.")
+    parser.add_argument("clustername", choices=clusters, help="The cluster to use.")
+    parser.add_argument("node_name", help="The name of the node to run.")
+    args = parser.parse_args()
 
-#     try:
-#         while True:
-#             time.sleep(1)
-#     except KeyboardInterrupt:
-#         print(f"{args.node_name} shutting down.")
-#         node.running = False
-#         server_thread.join()
-#         election_thread.join()
-#         print(f"{args.node_name} has shut down cleanly.")
+    # Validate node_name is in the selected cluster
+    available_nodes = list(config_data[args.clustername].keys())
+    if args.node_name not in available_nodes:
+        parser.error(f"Invalid node. Available nodes for {args.clustername}: {available_nodes}")
+
+    print(f"Cluster: {args.clustername}, Node: {args.node_name}")
+    node = Node(args.node_name, args.clustername)
+    
+    server_thread = threading.Thread(target=node.run_server)
+    server_thread.start()
+
+    election_thread = threading.Thread(target=node.run_election)
+    election_thread.start()
+
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print(f"{args.node_name} shutting down.")
+        node.running = False
+        server_thread.join()
+        election_thread.join()
+        print(f"{args.node_name} has shut down cleanly.")
