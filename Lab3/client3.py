@@ -26,7 +26,9 @@ def load_config(config_file):
         return None
     
 config = load_config('./config_file.json')  # Updated file path
+
 coordinator_config = config['coordinator']
+# print(coordinator_config)
 coordinator_url = f"http://{coordinator_config['ip_address']}:{coordinator_config['port']}"
 
 def initiate_transaction(source, destination, amount, simulate_crash=False):
@@ -37,6 +39,7 @@ def initiate_transaction(source, destination, amount, simulate_crash=False):
     try:
         # Create a proxy to the coordinator
         coordinator = xmlrpc.client.ServerProxy(coordinator_url)
+
         
         # Prepare transaction details
         transaction = {
@@ -95,6 +98,7 @@ def start_participant_node_with_balance(config, participant, initial_balance, sc
     
     try:
         with xmlrpc.client.ServerProxy(f'http://{participant_ip}:{participant_port}') as proxy:
+            print(f'http://{participant_ip}:{participant_port}/')
             response = proxy.set_initial_balance(initial_balance)
             print(f"Participant Node {participant_port}: {response}")
             
