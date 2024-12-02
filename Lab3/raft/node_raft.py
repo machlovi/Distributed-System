@@ -127,6 +127,7 @@ class Node:
         last_log_index = len(self.log) - 1
         last_log_term = self.log[last_log_index].term if self.log else 0
         self.election_timeout = random.uniform(2.0, 15.0)
+        # prin()
         
 
         for peer, (ip, port) in self.peers.items():
@@ -499,8 +500,8 @@ class Node:
         """Run the XML-RPC server to handle incoming requests.""" 
 
        
-        # with QuietXMLRPCServer((self.ip, self.port), allow_none=True) as server:
-        with QuietXMLRPCServer(("0.0.0.0", self.port), allow_none=True) as server:
+        with QuietXMLRPCServer((self.ip, self.port), allow_none=True) as server:
+        # with QuietXMLRPCServer(("0.0.0.0", self.port), allow_none=True) as server:
 
 
             server.register_instance(self)

@@ -174,7 +174,7 @@ class CoordinatorNode:
         for node_id, node_info in self.participants.items():
             if node_info['account'] == account:
                 try:
-                    proxy = xmlrpc.client.ServerProxy(f"http://{node_info['ip_address']}:{node_info['port']}")
+                    proxy = xmlrpc.client.ServerProxy(f"http://{node_info['ip_address']}:{node_info['port']}/")
                     return proxy.get_balance()
                 except Exception as e:
                     logging.error(f"Error getting balance for {account}: {e}")
@@ -218,7 +218,7 @@ class CoordinatorNode:
         try:
             for node_id, node_info in self.participants.items():
                 try:
-                    proxy = xmlrpc.client.ServerProxy(f"http://{node_info['ip_address']}:{node_info['port']}", transport=TimeoutTransport(self.timeout))
+                    proxy = xmlrpc.client.ServerProxy(f"http://{node_info['ip_address']}:{node_info['port']}/", transport=TimeoutTransport(self.timeout))
                     
                     # Check if this node is involved in the transaction
                     if (transaction['source_account'] == node_info['account'] or 
@@ -254,7 +254,7 @@ class CoordinatorNode:
                 commit_results = {}
                 for node_id, node_info in self.participants.items():
                     try:
-                        proxy = xmlrpc.client.ServerProxy(f"http://{node_info['ip_address']}:{node_info['port']}", transport=TimeoutTransport(self.timeout))
+                        proxy = xmlrpc.client.ServerProxy(f"http://{node_info['ip_address']}:{node_info['port']}/", transport=TimeoutTransport(self.timeout))
 
                         # Only commit for nodes involved in transaction
                         if (transaction['source_account'] == node_info['account'] or 
@@ -291,7 +291,7 @@ class CoordinatorNode:
                 
                 for node_id, node_info in self.participants.items():
                     try:
-                        proxy = xmlrpc.client.ServerProxy(f"http://{node_info['host']}:{node_info['port']}")
+                        proxy = xmlrpc.client.ServerProxy(f"http://{node_info['host']}:{node_info['port']}/")
                         proxy.abort(transaction)
                     except Exception as e:
                         logging.error(f"Error during abort for Node {node_id}: {e}")
