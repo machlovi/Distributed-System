@@ -259,7 +259,7 @@ def find_leader(cluster,current_leader=None):
         print(node_info)
 
         # Construct the URL string from node_info (['localhost', 8001] -> 'http://localhost:8001')
-        node_url = f"http://{node_info[0]}:{node_info[1]}"
+        node_url = f"http://{node_info[0]}:{node_info[1]}/"
         
         try:
             with xmlrpc.client.ServerProxy(node_url) as client:
@@ -346,7 +346,7 @@ def submit_values_with_leader_detection(cluster,current_balance):
 
 config = load_config('./config_file.json')  # Updated file path
 coordinator_config = config['coordinator']
-coordinator_url = f"http://{coordinator_config['ip_address']}:{coordinator_config['port']}"
+coordinator_url = f"http://{coordinator_config['ip_address']}:{coordinator_config['port']}/"
 
 def initiate_transaction(source, destination, amount, simulate_crash=False):
     """
@@ -393,7 +393,7 @@ def start_participant_node_with_balance(participant, initial_balance, scenario=N
     print(f'http://{participant_ip}:{participant_port}')
     
     try:
-        with xmlrpc.client.ServerProxy(f'http://{participant_ip}:{participant_port}') as proxy:
+        with xmlrpc.client.ServerProxy(f'http://{participant_ip}:{participant_port}/') as proxy:
             response = proxy.set_initial_balance(initial_balance)
             print(f"Participant Node {participant_port}: {response}")
             
@@ -475,7 +475,7 @@ def main():
 
             # Get the balance of the participant node after the transaction
             try:
-                with xmlrpc.client.ServerProxy(f"http://{ip_address}:{port}") as proxy:
+                with xmlrpc.client.ServerProxy(f"http://{ip_address}:{port}/") as proxy:
                   
                     current_balance = proxy.get_balance()
                     print(current_balance)
