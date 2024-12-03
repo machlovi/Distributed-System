@@ -326,8 +326,6 @@ def submit_values_with_leader_detection(cluster,current_balance):
     """Main loop for user interactions with the Raft cluster."""
     leader_url = find_leader(cluster)  # Initial leader detection
     print("submiting values")
-
-    
     # Submit values to the leader
     leader_url = write_value_to_leader(leader_url,current_balance, simulate_failure=False)
     if leader_url:
@@ -366,6 +364,7 @@ def initiate_transaction(source, destination, amount, simulate_crash=False):
         }
         logging.info(f"Initiating transaction: {source} -> {destination}, Amount: {amount}")
         print(f"Client: Initiating transaction: {source} -> {destination}, Amount: {amount}")
+    
         
         # Start the transaction through the coordinator
         result = coordinator.start_transaction(transaction)
@@ -427,6 +426,7 @@ def main():
 
         # Get participant configurations from the loaded config
         participants_config = config["participants"]
+        
 
 
     # Look for the specific node requested
@@ -485,11 +485,10 @@ def main():
                     
                     logging.info(f"Balance for Participant {account}: {current_balance}")
                     print(f"Balance for Participant {account}: {current_balance}")
-                    if value and args.node == "node7":
-                        initiate_transaction('A', 'B', 100)
-                            
-                    # else:
-                    #     logging.error("Nothing to do.")
+                    if value:
+                        if args.node == "node7":
+                            time.sleep(5)
+                            initiate_transaction('A', 'B', 100)
 
                     current_balance = proxy.get_balance()
                     print(f"updating balace {current_balance}")
