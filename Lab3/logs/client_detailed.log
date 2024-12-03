@@ -1,0 +1,152 @@
+2024-12-03 09:26:11,013 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 09:26:23,309 - Client - INFO - Transaction result: True
+2024-12-03 09:26:32,386 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 09:26:36,484 - Client - INFO - Transaction result: False
+2024-12-03 09:26:47,578 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 09:27:03,725 - Client - INFO - Transaction result: False
+2024-12-03 09:27:10,723 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 09:27:31,017 - Client - INFO - Transaction result: False
+2024-12-03 09:27:33,021 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 09:27:45,283 - Client - ERROR - Error initiating transaction: [WinError 10061] No connection could be made because the target machine actively refused it
+2024-12-03 09:28:00,289 - Client - INFO - Recovering coordinator.
+2024-12-03 09:28:04,354 - Client - ERROR - Error recovering coordinator: [WinError 10061] No connection could be made because the target machine actively refused it
+2024-12-03 10:58:58,330 - Client - ERROR - Error starting participant node: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+2024-12-03 10:59:55,344 - Client - ERROR - Error starting participant node: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+2024-12-03 11:00:45,661 - Client - ERROR - Error starting participant node: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+2024-12-03 11:01:06,697 - Client - ERROR - Error starting participant node: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+2024-12-03 11:01:06,698 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:01:27,740 - Client - ERROR - Error initiating transaction: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+2024-12-03 11:02:44,215 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:02:56,482 - Client - INFO - Transaction result: True
+2024-12-03 11:03:05,549 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:03:09,624 - Client - INFO - Transaction result: False
+2024-12-03 11:03:20,740 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:03:36,957 - Client - INFO - Transaction result: False
+2024-12-03 11:03:43,907 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:04:04,178 - Client - INFO - Transaction result: False
+2024-12-03 11:04:06,183 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:04:18,436 - Client - ERROR - Error initiating transaction: [WinError 10061] No connection could be made because the target machine actively refused it
+2024-12-03 11:04:33,445 - Client - INFO - Recovering coordinator.
+2024-12-03 11:04:37,527 - Client - ERROR - Error recovering coordinator: [WinError 10061] No connection could be made because the target machine actively refused it
+2024-12-03 11:05:13,508 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:05:33,741 - Client - INFO - Transaction result: False
+2024-12-03 11:05:42,818 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:05:46,882 - Client - INFO - Transaction result: False
+2024-12-03 11:05:57,982 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:06:14,157 - Client - INFO - Transaction result: False
+2024-12-03 11:06:21,122 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:06:41,351 - Client - INFO - Transaction result: False
+2024-12-03 11:06:43,354 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:06:55,603 - Client - ERROR - Error initiating transaction: [WinError 10061] No connection could be made because the target machine actively refused it
+2024-12-03 11:07:10,611 - Client - INFO - Recovering coordinator.
+2024-12-03 11:07:14,677 - Client - ERROR - Error recovering coordinator: [WinError 10061] No connection could be made because the target machine actively refused it
+2024-12-03 11:07:48,830 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:08:01,137 - Client - INFO - Transaction result: True
+2024-12-03 11:08:10,215 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:08:16,317 - Client - INFO - Transaction result: False
+2024-12-03 11:08:27,433 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:08:53,583 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:09:09,716 - Client - INFO - Transaction result: False
+2024-12-03 11:09:59,790 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:10:12,021 - Client - INFO - Transaction result: True
+2024-12-03 11:10:21,088 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:10:25,136 - Client - INFO - Transaction result: False
+2024-12-03 11:10:36,233 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:10:52,406 - Client - INFO - Transaction result: False
+2024-12-03 11:10:59,362 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:11:19,602 - Client - INFO - Transaction result: False
+2024-12-03 11:11:21,614 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:11:33,809 - Client - ERROR - Error initiating transaction: [WinError 10061] No connection could be made because the target machine actively refused it
+2024-12-03 11:11:48,810 - Client - INFO - Recovering coordinator.
+2024-12-03 11:11:52,866 - Client - ERROR - Error recovering coordinator: [WinError 10061] No connection could be made because the target machine actively refused it
+2024-12-03 11:14:10,980 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:14:23,289 - Client - INFO - Transaction result: True
+2024-12-03 11:14:32,356 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:14:36,423 - Client - INFO - Transaction result: False
+2024-12-03 11:14:47,529 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:15:03,710 - Client - INFO - Transaction result: False
+2024-12-03 11:15:10,650 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:15:30,978 - Client - INFO - Transaction result: False
+2024-12-03 11:15:32,990 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:15:45,154 - Client - ERROR - Error initiating transaction: [WinError 10061] No connection could be made because the target machine actively refused it
+2024-12-03 11:16:00,163 - Client - INFO - Recovering coordinator.
+2024-12-03 11:16:04,236 - Client - ERROR - Error recovering coordinator: [WinError 10061] No connection could be made because the target machine actively refused it
+2024-12-03 11:18:09,289 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:18:21,566 - Client - INFO - Transaction result: True
+2024-12-03 11:18:30,634 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:18:34,710 - Client - INFO - Transaction result: False
+2024-12-03 11:18:45,792 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:18:49,846 - Client - ERROR - Error initiating transaction: <Fault 1: "<class 'KeyboardInterrupt'>:">
+2024-12-03 11:18:53,942 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:19:14,179 - Client - INFO - Transaction result: False
+2024-12-03 11:19:16,198 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:19:28,390 - Client - ERROR - Error initiating transaction: [WinError 10061] No connection could be made because the target machine actively refused it
+2024-12-03 11:19:43,403 - Client - INFO - Recovering coordinator.
+2024-12-03 11:19:47,476 - Client - ERROR - Error recovering coordinator: [WinError 10061] No connection could be made because the target machine actively refused it
+2024-12-03 11:23:23,443 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:23:35,731 - Client - INFO - Transaction result: True
+2024-12-03 11:23:44,779 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:23:48,845 - Client - INFO - Transaction result: False
+2024-12-03 11:23:59,992 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:24:16,138 - Client - INFO - Transaction result: False
+2024-12-03 11:24:23,156 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:24:43,464 - Client - INFO - Transaction result: False
+2024-12-03 11:24:45,478 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:24:57,674 - Client - ERROR - Error initiating transaction: [WinError 10061] No connection could be made because the target machine actively refused it
+2024-12-03 11:25:12,675 - Client - INFO - Recovering coordinator.
+2024-12-03 11:25:16,728 - Client - ERROR - Error recovering coordinator: [WinError 10061] No connection could be made because the target machine actively refused it
+2024-12-03 11:27:01,193 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:27:13,409 - Client - INFO - Transaction result: True
+2024-12-03 11:27:22,519 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:27:26,604 - Client - INFO - Transaction result: False
+2024-12-03 11:27:37,714 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:27:53,876 - Client - INFO - Transaction result: False
+2024-12-03 11:28:00,856 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:28:04,938 - Client - ERROR - Error initiating transaction: <Fault 1: "<class 'KeyboardInterrupt'>:">
+2024-12-03 11:28:06,941 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:28:25,029 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:28:37,253 - Client - INFO - Transaction result: True
+2024-12-03 11:28:46,313 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:28:50,388 - Client - INFO - Transaction result: False
+2024-12-03 11:29:01,473 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:29:17,650 - Client - INFO - Transaction result: False
+2024-12-03 11:29:24,650 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:29:44,961 - Client - INFO - Transaction result: False
+2024-12-03 11:29:46,963 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:29:59,177 - Client - ERROR - Error initiating transaction: [WinError 10061] No connection could be made because the target machine actively refused it
+2024-12-03 11:30:14,181 - Client - INFO - Recovering coordinator.
+2024-12-03 11:30:18,246 - Client - ERROR - Error recovering coordinator: [WinError 10061] No connection could be made because the target machine actively refused it
+2024-12-03 11:30:57,088 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:31:09,407 - Client - INFO - Transaction result: True
+2024-12-03 11:31:18,506 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:31:22,574 - Client - INFO - Transaction result: False
+2024-12-03 11:31:33,674 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:31:49,937 - Client - INFO - Transaction result: False
+2024-12-03 11:31:56,895 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:32:03,036 - Client - ERROR - Error initiating transaction: <Fault 1: "<class 'KeyboardInterrupt'>:">
+2024-12-03 11:32:05,051 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:32:09,112 - Client - ERROR - Error initiating transaction: [WinError 10061] No connection could be made because the target machine actively refused it
+2024-12-03 11:32:22,197 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:32:34,533 - Client - INFO - Transaction result: True
+2024-12-03 11:32:43,577 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:32:47,666 - Client - INFO - Transaction result: False
+2024-12-03 11:32:58,780 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:33:14,950 - Client - INFO - Transaction result: False
+2024-12-03 11:33:21,958 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:33:42,242 - Client - INFO - Transaction result: False
+2024-12-03 11:33:44,250 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:33:56,494 - Client - ERROR - Error initiating transaction: [WinError 10061] No connection could be made because the target machine actively refused it
+2024-12-03 11:34:11,502 - Client - INFO - Recovering coordinator.
+2024-12-03 11:34:15,557 - Client - ERROR - Error recovering coordinator: [WinError 10061] No connection could be made because the target machine actively refused it
+2024-12-03 11:35:01,899 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:35:22,132 - Client - INFO - Transaction result: False
+2024-12-03 11:35:31,221 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:35:35,300 - Client - INFO - Transaction result: False
+2024-12-03 11:35:46,377 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:36:02,536 - Client - INFO - Transaction result: False
+2024-12-03 11:36:09,516 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:36:29,740 - Client - INFO - Transaction result: False
+2024-12-03 11:36:31,743 - Client - INFO - Initiating transaction: A -> B, Amount: 100
+2024-12-03 11:36:43,947 - Client - ERROR - Error initiating transaction: [WinError 10061] No connection could be made because the target machine actively refused it
+2024-12-03 11:36:58,952 - Client - INFO - Recovering coordinator.
+2024-12-03 11:37:00,974 - Client - INFO - Coordinator recovery result: True

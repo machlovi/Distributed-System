@@ -1,0 +1,1 @@
+{"transaction": {"source_account": "A", "destination_account": "B", "amount": 100, "simulate_crash": false}, "status": "aborted"}

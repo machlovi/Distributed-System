@@ -248,6 +248,8 @@ class CoordinatorNode:
 
                 logging.info("All participants ready. Proceeding to commit.")
                 # print("All participants ready. Proceeding to commit.")
+                self.transaction_state = {'transaction': transaction, 'status': 'prepared'}
+                self._save_transaction_state()
                 
                 # Commit phase
                 commit_results = {}
@@ -275,8 +277,6 @@ class CoordinatorNode:
                 
                 # Final transaction status
                 transaction_success = all(commit_results.values())
-                # logging.info(f"Transaction Final Status: {transaction_success}")
-                # print(f"Transaction final status: {transaction_success}")
                 
                 # Save the transaction state for recovery
                 self.transaction_state = {'transaction': transaction, 'status': 'committed' if transaction_success else 'aborted'}

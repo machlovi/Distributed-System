@@ -1,0 +1,19 @@
+INFO - Starting Participant Node 3 - B
+INFO - Participant Node 3 Account B starting on port 17003
+INFO - Initial balance set to: 200
+INFO - Prepare phase for transaction: {'source_account': 'A', 'destination_account': 'B', 'amount': 100, 'simulate_crash': False}
+INFO - Node 3: Not source account, prepared.
+INFO - Commit phase for transaction: {'source_account': 'A', 'destination_account': 'B', 'amount': 100, 'simulate_crash': False}
+INFO - Node B (3): Funds received. Old Balance: 200, New Balance: 300
+INFO - Node B (3): Bonus added. Old Balance: 300, New Balance: 360.0
+INFO - Initial balance set to: 50
+INFO - Initial balance set to: 300
+INFO - Prepare phase for transaction: {'source_account': 'A', 'destination_account': 'B', 'amount': 100, 'simulate_crash': False}
+INFO - Node 3: Not source account, prepared.
+INFO - Prepare phase for transaction: {'source_account': 'A', 'destination_account': 'B', 'amount': 100, 'simulate_crash': False}
+INFO - Node 3: Not source account, prepared.
+INFO - Commit phase for transaction: {'source_account': 'A', 'destination_account': 'B', 'amount': 100, 'simulate_crash': False}
+INFO - Node B (3): Funds received. Old Balance: 300, New Balance: 400
+INFO - Node B (3): Bonus added. Old Balance: 400, New Balance: 480.0
+INFO - Prepare phase for transaction: {'source_account': 'A', 'destination_account': 'B', 'amount': 100, 'simulate_crash': True}
+INFO - Node 3: Not source account, prepared.

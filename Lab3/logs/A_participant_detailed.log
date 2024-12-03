@@ -1,0 +1,29 @@
+INFO - Starting Participant Node 2 - A
+INFO - Participant Node 2 Account A starting on port 17002
+INFO - Initial balance set to: 100
+INFO - Balance request for Account A: 100
+INFO - Prepare phase for transaction: {'source_account': 'A', 'destination_account': 'B', 'amount': 100, 'simulate_crash': False}
+INFO - Node 2: Not source account, prepared.
+INFO - Commit phase for transaction: {'source_account': 'A', 'destination_account': 'B', 'amount': 100, 'simulate_crash': False}
+INFO - Node A (2): Funds transferred. Old Balance: 100, New Balance: 0
+INFO - Node A (2): Bonus added. Old Balance: 0, New Balance: 0.0
+INFO - Initial balance set to: 90
+INFO - Balance request for Account A: 90
+INFO - Initial balance set to: 200
+INFO - Crash scenario set to: before_response
+INFO - Balance request for Account A: 200
+INFO - Prepare phase for transaction: {'source_account': 'A', 'destination_account': 'B', 'amount': 100, 'simulate_crash': False}
+INFO - Simulating crash for Node 2 before responding...
+INFO - Node 2: Prepare result. Balance: 200, Amount: 100, Prepared: True
+INFO - Initial balance set to: 200
+INFO - Crash scenario set to: after_response
+INFO - Balance request for Account A: 200
+INFO - Prepare phase for transaction: {'source_account': 'A', 'destination_account': 'B', 'amount': 100, 'simulate_crash': False}
+INFO - Node 2: Not source account, prepared.
+INFO - Commit phase for transaction: {'source_account': 'A', 'destination_account': 'B', 'amount': 100, 'simulate_crash': False}
+INFO - Simulating crash for Node 2 after responding...
+INFO - Node A (2): Funds transferred. Old Balance: 200, New Balance: 100
+INFO - Node A (2): Bonus added. Old Balance: 100, New Balance: 120.0
+INFO - Balance request for Account A: 120.0
+INFO - Prepare phase for transaction: {'source_account': 'A', 'destination_account': 'B', 'amount': 100, 'simulate_crash': True}
+INFO - Node 2: Not source account, prepared.

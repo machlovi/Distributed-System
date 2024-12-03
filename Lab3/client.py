@@ -118,47 +118,47 @@ def main():
     for participant in config['participants']:
         start_participant_node_with_balance(config, participant, participant['initial_balance'])
 
-    print(
-        """
-        ************************************************************************
-                     Scenario 1: Successful Transaction
-        ************************************************************************
-        """
-    )
-    initiate_transaction('A', 'B', 100)
-    time.sleep(5)
+    # print(
+    #     """
+    #     ************************************************************************
+    #                  Scenario 1: Successful Transaction
+    #     ************************************************************************
+    #     """
+    # )
+    # initiate_transaction('A', 'B', 100)
+    # time.sleep(5)
 
-    print(
-    """
-    ************************************************************************
-                    Scenario 2: Insufficient Funds
-    ************************************************************************
-    """)
-    start_participant_node_with_balance(config, config['participants'][0], 90)  # Node 1 with insufficient funds
-    start_participant_node_with_balance(config, config['participants'][1], 50)  # Node 2 with insufficient funds
-    initiate_transaction('A', 'B', 100)
-    time.sleep(5)
+    # print(
+    # """
+    # ************************************************************************
+    #                 Scenario 2: Insufficient Funds
+    # ************************************************************************
+    # """)
+    # start_participant_node_with_balance(config, config['participants'][0], 90)  # Node 1 with insufficient funds
+    # start_participant_node_with_balance(config, config['participants'][1], 50)  # Node 2 with insufficient funds
+    # initiate_transaction('A', 'B', 100)
+    # time.sleep(5)
 
-    print(
-    """
-    ************************************************************************
-                    Scenario 3: Crash before response Node 2
-    ************************************************************************
-    """)
-    # Set crash scenario for Node-2 before response
-    start_participant_node_with_balance(config, config['participants'][0], 200, scenario='before_response') 
-    start_participant_node_with_balance(config, config['participants'][1], 300)
-    initiate_transaction('A', 'B', 100)
+    # print(
+    # """
+    # ************************************************************************
+    #                 Scenario 3: Crash before response Node 2
+    # ************************************************************************
+    # """)
+    # # Set crash scenario for Node-2 before response
+    # start_participant_node_with_balance(config, config['participants'][0], 200, scenario='before_response') 
+    # start_participant_node_with_balance(config, config['participants'][1], 300)
+    # initiate_transaction('A', 'B', 100)
     
-    print(
-    """
-    ************************************************************************
-                    Scenario 4: Crash after response Node 2
-    ************************************************************************
-    """)
-    start_participant_node_with_balance(config, config['participants'][0], 200, scenario='after_response')
-    initiate_transaction('A', 'B', 100)
-    time.sleep(2)
+    # print(
+    # """
+    # ************************************************************************
+    #                 Scenario 4: Crash after response Node 2
+    # ************************************************************************
+    # """)
+    # start_participant_node_with_balance(config, config['participants'][0], 200, scenario='after_response')
+    # initiate_transaction('A', 'B', 100)
+    # time.sleep(2)
 
     print(
         """
@@ -167,12 +167,24 @@ def main():
         ************************************************************************
         """
     )
+    time.sleep(5)
     initiate_transaction('A', 'B', 100, simulate_crash=True)
     time.sleep(15)
 
     # Recover the coordinator after the crash
     print("Client: Recovering coordinator...")
     recover_coordinator(recover=True)
+    time.sleep(5)
+
+    print(
+        """
+        ************************************************************************
+                     Scenario 6: Coordinator Crash  Transaction After Recovery
+        ************************************************************************
+        """
+    )
+    initiate_transaction('A', 'B', 100, simulate_crash=False)
+
     time.sleep(5)
 
 if __name__ == "__main__":

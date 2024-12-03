@@ -1,1 +1,29 @@
 Coordinator - INFO - Coordinator Node 1 starting on IP localhost and port 17001
+Coordinator - INFO - Coordinator Node 1 starting on IP localhost and port 17001
+Coordinator - INFO - Starting standard transaction: {'source_account': 'A', 'destination_account': 'B', 'amount': 100, 'simulate_crash': False}
+Coordinator - INFO - Prepare result for Node 2: True
+Coordinator - INFO - Prepare result for Node 3: True
+Coordinator - INFO - All participants ready. Proceeding to commit.
+Coordinator - INFO - Commit result for Node 2: True
+Coordinator - INFO - Commit result for Node 3: True
+Coordinator - INFO - Transaction final status: True
+Coordinator - INFO - Starting standard transaction: {'source_account': 'A', 'destination_account': 'B', 'amount': 100, 'simulate_crash': False}
+Coordinator - WARNING - Insufficient funds. Balance: 90, Required: 100
+Coordinator - INFO - Starting standard transaction: {'source_account': 'A', 'destination_account': 'B', 'amount': 100, 'simulate_crash': False}
+Coordinator - ERROR - Error in prepare phase for Node 2: timed out
+Coordinator - INFO - Prepare result for Node 3: True
+Coordinator - WARNING - Prepare phase failed. Initiating abort.
+Coordinator - ERROR - Error during abort for Node 2: 'host'
+Coordinator - ERROR - Error during abort for Node 3: 'host'
+Coordinator - INFO - Starting standard transaction: {'source_account': 'A', 'destination_account': 'B', 'amount': 100, 'simulate_crash': False}
+Coordinator - INFO - Prepare result for Node 2: True
+Coordinator - INFO - Prepare result for Node 3: True
+Coordinator - INFO - All participants ready. Proceeding to commit.
+Coordinator - ERROR - Error in commit phase for Node 2: timed out
+Coordinator - INFO - Commit result for Node 3: True
+Coordinator - INFO - Transaction final status: False
+Coordinator - INFO - Starting standard transaction: {'source_account': 'A', 'destination_account': 'B', 'amount': 100, 'simulate_crash': True}
+Coordinator - INFO - Prepare result for Node 2: True
+Coordinator - INFO - Prepare result for Node 3: True
+Coordinator - WARNING - Simulating crash during the prepare phase.
+Coordinator - WARNING - Simulating coordinator crash...
