@@ -102,7 +102,7 @@ class ParticipantNode:
         """
         current_balance = self.account_manager.get_balance()
         logging.info(f"Balance request for Account A: {current_balance}")
-        print(f"Node A: Balance request: {current_balance}")
+        # print(f"Node A: Balance request: {current_balance}")
         return current_balance
     
     def prepare(self, transaction):
@@ -110,7 +110,7 @@ class ParticipantNode:
         Prepare phase for transaction
         """
         logging.info(f"Prepare phase for transaction: {transaction}")
-        print(f"Node {self.node_id}: Prepare phase for transaction: {transaction}")
+        # print(f"Node {self.node_id}: Prepare phase for transaction: {transaction}")
         
 
         if self.crash_scenario == 'before_response' and self.node_id == 2:
@@ -133,7 +133,7 @@ class ParticipantNode:
         
         is_prepared = current_balance >= amount
         logging.info(f"Node {self.node_id}: Prepare result. Balance: {current_balance}, Amount: {amount}, Prepared: {is_prepared}")
-        print(f"Node {self.node_id}: Prepare result. Balance: {current_balance}, Amount: {amount}, Prepared: {is_prepared}")
+        # print(f"Node {self.node_id}: Prepare result. Balance: {current_balance}, Amount: {amount}, Prepared: {is_prepared}")
         
         return is_prepared
     
@@ -142,10 +142,11 @@ class ParticipantNode:
         Commit transaction
         """
         logging.info(f"Commit phase for transaction: {transaction}")
-        print(f"Node {self.node_id}: Commit phase for transaction: {transaction}")
+        # print(f"Node {self.node_id}: Commit phase for transaction: {transaction}")
 
         # Simulate crash after responding in the 'commit' phase for Node-2
         if self.crash_scenario == 'after_response' and self.node_id == 2:
+            # print(f"Simulating crash for Node {self.node_id} after responding...")
             logging.info(f"Simulating crash for Node {self.node_id} after responding...")
             time.sleep(15)  # Simulate long delay (crash)
             # return False  # Node-2 fails to commit
@@ -162,7 +163,7 @@ class ParticipantNode:
                 self.account_manager.update_balance(new_balance_A)
                 
                 logging.info(f"Node A (2): Funds transferred. Old Balance: {current_balance_A}, New Balance: {new_balance_A}")
-                print(f"Node A (2): Funds transferred. Old Balance: {current_balance_A}, New Balance: {new_balance_A}")
+                # print(f"Node A (2): Funds transferred. Old Balance: {current_balance_A}, New Balance: {new_balance_A}")
 
             elif transaction['source_account'] == 'B' and self.node_id == 3:  # Node 3 is Account B
                 current_balance_B = self.account_manager.get_balance()
@@ -174,7 +175,7 @@ class ParticipantNode:
                 self.account_manager.update_balance(new_balance_B)
 
                 logging.info(f"Node B (3): Funds transferred. Old Balance: {current_balance_B}, New Balance: {new_balance_B}")
-                print(f"Node B (3): Funds transferred. Old Balance: {current_balance_B}, New Balance: {new_balance_B}")
+                # print(f"Node B (3): Funds transferred. Old Balance: {current_balance_B}, New Balance: {new_balance_B}")
 
             # Step 2: Add funds to the destination account
             if transaction['destination_account'] == 'B' and self.node_id == 3:  # Node 3 is Account B
@@ -183,7 +184,7 @@ class ParticipantNode:
                 self.account_manager.update_balance(new_balance_B)
                 
                 logging.info(f"Node B (3): Funds received. Old Balance: {current_balance_B}, New Balance: {new_balance_B}")
-                print(f"Node B (3): Funds received. Old Balance: {current_balance_B}, New Balance: {new_balance_B}")
+                # print(f"Node B (3): Funds received. Old Balance: {current_balance_B}, New Balance: {new_balance_B}")
             
             elif transaction['destination_account'] == 'A' and self.node_id == 2:  # Node 2 is Account A
                 current_balance_A = self.account_manager.get_balance()
@@ -191,7 +192,7 @@ class ParticipantNode:
                 self.account_manager.update_balance(new_balance_A)
 
                 logging.info(f"Node A (2): Funds received. Old Balance: {current_balance_A}, New Balance: {new_balance_A}")
-                print(f"Node A (2): Funds received. Old Balance: {current_balance_A}, New Balance: {new_balance_A}")
+                # print(f"Node A (2): Funds received. Old Balance: {current_balance_A}, New Balance: {new_balance_A}")
             
             # Step 3: Apply bonus (20%) to both A and B
             if self.node_id == 2:  # Node 2 is 'A'
@@ -201,7 +202,7 @@ class ParticipantNode:
                 self.account_manager.update_balance(new_balance_A)
                 
                 logging.info(f"Node A (2): Bonus added. Old Balance: {current_balance_A}, New Balance: {new_balance_A}")
-                print(f"Node A (2): Bonus added. Old Balance: {current_balance_A}, New Balance: {new_balance_A}")
+                # print(f"Node A (2): Bonus added. Old Balance: {current_balance_A}, New Balance: {new_balance_A}")
             
             elif self.node_id == 3:  # Node 3 is 'B'
                 current_balance_B = self.account_manager.get_balance()
@@ -210,7 +211,7 @@ class ParticipantNode:
                 self.account_manager.update_balance(new_balance_B)
                 
                 logging.info(f"Node B (3): Bonus added. Old Balance: {current_balance_B}, New Balance: {new_balance_B}")
-                print(f"Node B (3): Bonus added. Old Balance: {current_balance_B}, New Balance: {new_balance_B}")
+                # print(f"Node B (3): Bonus added. Old Balance: {current_balance_B}, New Balance: {new_balance_B}")
             
             return True
 
@@ -225,7 +226,7 @@ class ParticipantNode:
         Abort transaction
         """
         logging.info(f"Abort phase for transaction: {transaction}")
-        print(f"Node {self.node_id}: Abort phase for transaction: {transaction}")
+        # print(f"Node {self.node_id}: Abort phase for transaction: {transaction}")
         return True
     
     def start_server(self):
@@ -234,7 +235,7 @@ class ParticipantNode:
 
         # Log the starting message with correct account label
         logging.info(f"Participant Node {self.node_id} Account {account_label} starting on port {self.port}")
-        print(f"Participant Node {self.node_id} Accou {account_label} starting on port {self.port}")
+        # print(f"Participant Node {self.node_id} Accou {account_label} starting on port {self.port}")
 
         # Start the server
         self.server.serve_forever()
@@ -271,7 +272,8 @@ def main():
             log_filename = f'{log_dir}/{account}_participant_detailed.log'
             logging.basicConfig(level=logging.DEBUG,
                                 format='%(levelname)s - %(message)s',
-                                filename=log_filename)
+                                # filename=log_filename
+                                )
             
             logging.info(f"Starting Participant Node {node_id} - {account}")
 

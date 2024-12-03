@@ -11,7 +11,8 @@ import logging
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, 
                     format='Coordinator - %(levelname)s - %(message)s',
-                    filename='./logs/coordinator_transactions.log')
+                    # filename='./logs/coordinator_transactions.log'
+                        )
 
 
 class QuietXMLRPCServer(SimpleXMLRPCServer):
@@ -139,7 +140,7 @@ class CoordinatorNode:
             
         # Load saved transaction state
         saved_state = self.load_transaction_state()
-        print(saved_state)
+        # print(saved_state)
 
         
         if saved_state:
@@ -192,7 +193,7 @@ class CoordinatorNode:
         Standard money transfer transaction
         """
         logging.info(f"Starting standard transaction: {transaction}")
-        print(f"Coordinator: Starting standard transaction: {transaction}")
+        # print(f"Coordinator: Starting standard transaction: {transaction}")
 
         
 
@@ -224,7 +225,7 @@ class CoordinatorNode:
                         
                         prepare_result = proxy.prepare(transaction)
                         logging.info(f"Prepare result for Node {node_id}: {prepare_result}")
-                        print(f"Prepare result for Node {node_id}: {prepare_result}")
+                        # print(f"Prepare result for Node {node_id}: {prepare_result}")
                         
                         prepare_results[node_id] = prepare_result
                     else:
@@ -233,7 +234,7 @@ class CoordinatorNode:
                 
                 except Exception as e:
                     logging.error(f"Error in prepare phase for Node {node_id}: {e}")
-                    print(f"Error in prepare phase for Node {node_id}: {e}")
+                    # print(f"Error in prepare phase for Node {node_id}: {e}")
                     prepare_results[node_id] = False
             
             # Check if all participants are ready
@@ -246,7 +247,7 @@ class CoordinatorNode:
                     return False
 
                 logging.info("All participants ready. Proceeding to commit.")
-                print("All participants ready. Proceeding to commit.")
+                # print("All participants ready. Proceeding to commit.")
                 
                 # Commit phase
                 commit_results = {}
@@ -260,7 +261,7 @@ class CoordinatorNode:
                             
                             commit_result = proxy.commit(transaction)
                             logging.info(f"Commit result for Node {node_id}: {commit_result}")
-                            print(f"Commit result for Node {node_id}: {commit_result}")
+                            # print(f"Commit result for Node {node_id}: {commit_result}")
                             
                             commit_results[node_id] = commit_result
                         else:
@@ -269,23 +270,27 @@ class CoordinatorNode:
                     
                     except Exception as e:
                         logging.error(f"Error in commit phase for Node {node_id}: {e}")
-                        print(f"Error in commit phase for Node {node_id}: {e}")
+                        # print(f"Error in commit phase for Node {node_id}: {e}")
                         commit_results[node_id] = False
                 
                 # Final transaction status
                 transaction_success = all(commit_results.values())
-                logging.info(f"Transaction final status: {transaction_success}")
-                print(f"Transaction final status: {transaction_success}")
+                # logging.info(f"Transaction Final Status: {transaction_success}")
+                # print(f"Transaction final status: {transaction_success}")
                 
                 # Save the transaction state for recovery
                 self.transaction_state = {'transaction': transaction, 'status': 'committed' if transaction_success else 'aborted'}
+                
+                transaction_status = self.transaction_state.get('status', 'No status available')
+                logging.info(f"Transaction Final Status:  {transaction_status}")
+
                 self._save_transaction_state()
 
                 return transaction_success
             else:
                 # Prepare phase failed, initiate abort
                 logging.warning("Prepare phase failed. Initiating abort.")
-                print("Prepare phase failed. Initiating abort.")
+                # print("Prepare phase failed. Initiating abort.")
                 
                 for node_id, node_info in self.participants.items():
                     try:
@@ -306,21 +311,13 @@ class CoordinatorNode:
                     return False
         
 
-    # def start_server(self):
-    #     logging.info(f"Coordinator Node {self.node_id} starting on port {self.port}")
-    #     print(f"Coordinator Node {self.node_id} starting on port {self.port}")
-    #     self.server.serve_forever()
-
     def start_server(self):
         # Log the starting message for the coordinator
         logging.info(f"Coordinator Node {self.node_id} starting on IP {self.ip_address} and port {self.port}")
-        print(f"Coordinator Node {self.node_id} starting on IP {self.ip_address} and port {self.port}")
+        # print(f"Coordinator Node {self.node_id} starting on IP {self.ip_address} and port {self.port}")
         self.server.serve_forever()
 
 def main():
-    # Create and start coordinator node
-    # coordinator = CoordinatorNode()
-    # coordinator.start_server()
 
        # Load configuration from the config file
     config = load_config('./config_file.json')
