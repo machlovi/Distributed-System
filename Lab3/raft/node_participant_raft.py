@@ -402,6 +402,8 @@ def start_participant_node_with_balance(participant, initial_balance, scenario=N
         print(f"Client: Error starting participant node: {e}")
 
 
+
+
 def main():
     parser = argparse.ArgumentParser(description="Start Participant Node.")
     parser.add_argument("node", type=str, choices=["node7", "node8"], help="Node to start (node7 or node8)")
@@ -409,17 +411,23 @@ def main():
 
     # Load configuration from the config file
     config = load_config('config_file.json')
+
     if not config:
         return
 
-    # Determine the correct cluster based on the node selected
-    if args.node == "node7":
-        cluster = "clusterA"
-    else:
-        cluster = "clusterB"
 
-    # Get participant configurations from the loaded config
-    participants_config = config["participants"]
+
+        # Determine the correct cluster based on the node selected
+    if args.node == "node7" or args.node == "node8":  # Modify if you have more nodes
+        if args.node == "node7":
+            cluster = "clusterA"
+        else:
+            cluster = "clusterB"
+
+        # Get participant configurations from the loaded config
+        participants_config = config["participants"]
+        
+
 
     # Look for the specific node requested
     for participant_config in participants_config:
@@ -452,160 +460,47 @@ def main():
             # Start the participant's server in a separate thread
             server_thread = start_server_in_thread(participant_node)
 
-            # Now that the server is running, interact with it
+            # Now that the server is running, you can interact with it
             print("Submitting values and getting balance...")
-
+            # submit_values_with_leader_detection()
+                 # Ensure we only initiate balance update for the running node
+                 
             if args.node == f"node7":
+                # Update balance for the respective running node
                 start_participant_node_with_balance(participant_config, initial_balance=200)
             else:
                 start_participant_node_with_balance(participant_config, initial_balance=300)
 
+
+
             # Get the balance of the participant node after the transaction
             try:
                 with xmlrpc.client.ServerProxy(f"http://{ip_address}:{port}/") as proxy:
-                    # Fetch balance for node and log it
+                  
                     current_balance = proxy.get_balance()
+                    print(current_balance)
+                    value=submit_values_with_leader_detection(cluster,current_balance)
+                    print(value)
+        
+                    
                     logging.info(f"Balance for Participant {account}: {current_balance}")
                     print(f"Balance for Participant {account}: {current_balance}")
 
-                    # Submit updated balance with leader detection
-                    value = submit_values_with_leader_detection(cluster, current_balance)
-                    logging.info(f"Submit result for {account}: {value}")
-                    print(f"Submit result for {account}: {value}")
-
-                    # Only initiate transaction for node7, but propagate result to node8
-                    transaction_success = False
                     if value:
                         if args.node == "node7":
-                            time.sleep(5)  # Simulate delay for node7
-                            transaction_success = initiate_transaction('A', 'B', 100)
-                        
-                        # Propagate the transaction status to node8
-                        if args.node == "node8":
-                            # Here, the status should be propagated from node7 to node8
-                            transaction_success = value
+                            time.sleep(5)
+                            initiate_transaction('A', 'B', 100)
 
-                        # Update the balance for node7 and node8 based on transaction result
-                        if transaction_success:
-                            with xmlrpc.client.ServerProxy(f"http://{ip_address}:{port}/") as proxy:
-                                new_balance = proxy.get_balance()
-                                logging.info(f"Updating balance for Participant {account}: {new_balance}")
-                                print(f"Updating balance for Participant {account}: {new_balance}")
-                                # Propagate the updated balance to both nodes
-                                submit_values_with_leader_detection(cluster, new_balance)
-
-                    # After the transaction, update the balance again
                     current_balance = proxy.get_balance()
-                    logging.info(f"Updated balance for Participant {account}: {current_balance}")
-                    print(f"Updated balance for Participant {account}: {current_balance}")
-
-                    # Submit again if needed
-                    value = submit_values_with_leader_detection(cluster, current_balance)
-                    logging.info(f"Submit result after update for {account}: {value}")
-                    print(f"Submit result after update for {account}: {value}")
+                    print(f"updating balace {current_balance}")
+                    value=submit_values_with_leader_detection(cluster,current_balance)
 
             except Exception as e:
                 logging.error(f"Error getting balance from participant node: {e}")
 
-
-
-# def main():
-#     parser = argparse.ArgumentParser(description="Start Participant Node.")
-#     parser.add_argument("node", type=str, choices=["node7", "node8"], help="Node to start (node7 or node8)")
-#     args = parser.parse_args()
-
-#     # Load configuration from the config file
-#     config = load_config('config_file.json')
-
-#     if not config:
-#         return
-
-
-
-#         # Determine the correct cluster based on the node selected
-#     if args.node == "node7" or args.node == "node8":  # Modify if you have more nodes
-#         if args.node == "node7":
-#             cluster = "clusterA"
-#         else:
-#             cluster = "clusterB"
-
-#         # Get participant configurations from the loaded config
-#         participants_config = config["participants"]
-        
-
-
-#     # Look for the specific node requested
-#     for participant_config in participants_config:
-#         node_id = participant_config["node_id"]
-#         if args.node == f"node{node_id}":
-#             ip_address = participant_config["ip_address"]
-#             port = participant_config["port"]
-#             initial_balance = participant_config["initial_balance"]
-#             account = participant_config["account"]
-
-#             # Set up logging for each participant
-#             log_dir = './logs'
-#             if not os.path.exists(log_dir):
-#                 os.makedirs(log_dir)
-
-#             log_filename = f'{log_dir}/{account}_participant_detailed.log'
-#             logging.basicConfig(level=logging.DEBUG,
-#                                 format='%(levelname)s - %(message)s')
-
-#             logging.info(f"Starting Participant Node {node_id} - {account}")
-
-#             # Start the participant node
-#             participant_node = ParticipantNode(
-#                 node_id=node_id,
-#                 ip_address=ip_address,
-#                 port=port,
-#                 initial_balance=initial_balance
-#             )
-
-#             # Start the participant's server in a separate thread
-#             server_thread = start_server_in_thread(participant_node)
-
-#             # Now that the server is running, you can interact with it
-#             print("Submitting values and getting balance...")
-#             # submit_values_with_leader_detection()
-#                  # Ensure we only initiate balance update for the running node
-                 
-#             if args.node == f"node7":
-#                 # Update balance for the respective running node
-#                 start_participant_node_with_balance(participant_config, initial_balance=200)
-#             else:
-#                 start_participant_node_with_balance(participant_config, initial_balance=300)
-
-
-
-#             # Get the balance of the participant node after the transaction
-#             try:
-#                 with xmlrpc.client.ServerProxy(f"http://{ip_address}:{port}/") as proxy:
-                  
-#                     current_balance = proxy.get_balance()
-#                     print(current_balance)
-#                     value=submit_values_with_leader_detection(cluster,current_balance)
-#                     print(value)
-        
-                    
-#                     logging.info(f"Balance for Participant {account}: {current_balance}")
-#                     print(f"Balance for Participant {account}: {current_balance}")
-
-#                     if value:
-#                         if args.node == "node7":
-#                             time.sleep(5)
-#                             initiate_transaction('A', 'B', 100)
-
-#                     current_balance = proxy.get_balance()
-#                     print(f"updating balace {current_balance}")
-#                     value=submit_values_with_leader_detection(cluster,current_balance)
-
-#             except Exception as e:
-#                 logging.error(f"Error getting balance from participant node: {e}")
-
-#             # Continue with other operations
-#             server_thread.join()  # Wait for the server thread to finish if needed
-#             break  # Exit after the selected node is started
+            # Continue with other operations
+            server_thread.join()  # Wait for the server thread to finish if needed
+            break  # Exit after the selected node is started
 
 
 if __name__ == "__main__":
