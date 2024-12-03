@@ -473,6 +473,8 @@ def main():
 
 
 
+
+
             # Get the balance of the participant node after the transaction
             try:
                 with xmlrpc.client.ServerProxy(f"http://{ip_address}:{port}/") as proxy:
@@ -490,6 +492,9 @@ def main():
                         if args.node == "node7":
                             time.sleep(5)
                             initiate_transaction('A', 'B', 100)
+                    
+                    if args.node=='node8':
+                        time.sleep(15)
 
                     current_balance = proxy.get_balance()
                     print(f"updating balace {current_balance}")
