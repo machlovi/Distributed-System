@@ -3,3 +3,5 @@ Lab2_Report.pdf
 !config_file.json
 /Lab3/*.logs
 *.zip
+*.docx
+*.tmp
