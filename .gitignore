@@ -10,4 +10,5 @@ Lab-2-6935.pdf
 Lab2_Report.pdf
 node.py
 !config_file.json
-!logs/
+!Lab3/logs/
+!Lab3/raft/logs
