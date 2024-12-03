@@ -394,7 +394,7 @@ def start_participant_node_with_balance(participant, initial_balance, scenario=N
     try:
         with xmlrpc.client.ServerProxy(f'http://{participant_ip}:{participant_port}/') as proxy:
             response = proxy.set_initial_balance(initial_balance)
-            print(f"Participant Node {participant_port}: {response}")
+            # print(f"Participant Node {participant_port}: {response}")
             
            
     except Exception as e:
@@ -485,6 +485,7 @@ def main():
                     
                     logging.info(f"Balance for Participant {account}: {current_balance}")
                     print(f"Balance for Participant {account}: {current_balance}")
+
                     if value:
                         if args.node == "node7":
                             time.sleep(5)
