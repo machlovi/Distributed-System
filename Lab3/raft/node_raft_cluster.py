@@ -653,33 +653,33 @@ class Node:
 
 #     print("All nodes have shut down cleanly.")
     
-if __name__ == "__main__":
-    clusters = ['clusterA', 'clusterB']
-    parser = argparse.ArgumentParser(description="Run a Raft Node.")
-    parser.add_argument("clustername", choices=clusters, help="The cluster to use.")
-    parser.add_argument("node_name", help="The name of the node to run.")
-    args = parser.parse_args()
+# if __name__ == "__main__":
+#     clusters = ['clusterA', 'clusterB']
+#     parser = argparse.ArgumentParser(description="Run a Raft Node.")
+#     parser.add_argument("clustername", choices=clusters, help="The cluster to use.")
+#     parser.add_argument("node_name", help="The name of the node to run.")
+#     args = parser.parse_args()
 
-    # Validate node_name is in the selected cluster
-    available_nodes = list(config_data[args.clustername].keys())
-    if args.node_name not in available_nodes:
-        parser.error(f"Invalid node. Available nodes for {args.clustername}: {available_nodes}")
+#     # Validate node_name is in the selected cluster
+#     available_nodes = list(config_data[args.clustername].keys())
+#     if args.node_name not in available_nodes:
+#         parser.error(f"Invalid node. Available nodes for {args.clustername}: {available_nodes}")
 
-    print(f"Cluster: {args.clustername}, Node: {args.node_name}")
-    node = Node(args.node_name, args.clustername)
+#     print(f"Cluster: {args.clustername}, Node: {args.node_name}")
+#     node = Node(args.node_name, args.clustername)
     
-    server_thread = threading.Thread(target=node.run_server)
-    server_thread.start()
+#     server_thread = threading.Thread(target=node.run_server)
+#     server_thread.start()
 
-    election_thread = threading.Thread(target=node.run_election)
-    election_thread.start()
+#     election_thread = threading.Thread(target=node.run_election)
+#     election_thread.start()
 
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        print(f"{args.node_name} shutting down.")
-        node.running = False
-        server_thread.join()
-        election_thread.join()
-        print(f"{args.node_name} has shut down cleanly.")
+#     try:
+#         while True:
+#             time.sleep(1)
+#     except KeyboardInterrupt:
+#         print(f"{args.node_name} shutting down.")
+#         node.running = False
+#         server_thread.join()
+#         election_thread.join()
+#         print(f"{args.node_name} has shut down cleanly.")
