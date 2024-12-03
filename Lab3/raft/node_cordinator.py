@@ -216,6 +216,7 @@ class CoordinatorNode:
         # Prepare phase
         prepare_results = {}
         try:
+            
             for node_id, node_info in self.participants.items():
                 try:
                     proxy = xmlrpc.client.ServerProxy(f"http://{node_info['ip_address']}:{node_info['port']}/", transport=TimeoutTransport(self.timeout))
