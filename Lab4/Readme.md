@@ -1,104 +1,166 @@
-Step 1:
+# Kafka Cluster Setup Guide
+
+## Prerequisites
+- Ubuntu Linux (tested on 20.04 LTS)
+- Root or sudo access
+- Java Development Kit (JDK)
+
+## Overview
+This guide walks you through setting up a 3-node Kafka cluster with ZooKeeper for distributed message streaming.
+
+## Step 1: Installation
+
+### Update System and Install Dependencies
+```bash
 sudo apt-get update
-sudo apt-get install default-jdk
+sudo apt-get install default-jdk wget
+```
+
+### Download and Extract Kafka
+```bash
 wget https://downloads.apache.org/kafka/latest/kafka_2.13-2.8.0.tgz
 tar -xzf kafka_2.13-2.8.0.tgz
 cd kafka_2.13-2.8.0
 mv kafka_2.13-2.8.0 kafka
+```
 
-Once installation is done make the following changes in zookeeper.properties
-on each node:
+## Step 2: Configure ZooKeeper
 
+Edit ZooKeeper configuration on each node:
+```bash
 vi kafka/config/zookeeper.properties
+```
 
+Configure the following settings:
+```properties
+# ZooKeeper Data Directory
 dataDir=/var/lib/zookeeper
-# the port at which the clients will connect
 
+# Client Connection Port
 clientPort=2181
-# disable the per-ip limit on the number of connections since this is a non-production config
+
+# Connection Limits
 maxClientCnxns=0
 tickTime=2000
 initLimit=5
 syncLimit=2
-
 admin.enableServer=false
-# replace your <internal ips>
-server.1=10.128.0.5:2888:3888 
-server.2=10.128.0.3:2888:3888
-server.3=10.128.0.7:2888:3888
 
+# ZooKeeper Cluster Configuration
+server.1=<node1_internalip>:2888:3888
+server.2=<node2_internalip>:2888:3888
+server.3=<node3_internalip>:2888:3888
+```
 
-Step 2: make the following dirs and allow the root permission. Make it on every node
-vi kafka/config/sever.properties
-<username>--> your username
+## Step 3: Prepare ZooKeeper Data Directory
 
-<id> uniquebroker id [1,2,3]
-
+On each node, create and set permissions:
+```bash
 sudo mkdir -p /var/lib/zookeeper
 sudo chown <username>:<username> /var/lib/zookeeper
-echo <id> | sudo tee /var/lib/zookeeper/myid
+
+# Create a unique ID for each node (1, 2, or 3)
+echo <node_id> | sudo tee /var/lib/zookeeper/myid
 ls -l /var/lib/zookeeper/myid
+```
 
+## Step 4: Configure Kafka Server
 
-Step3:  Run zookeeper
-~/kafka/bin/zookeeper-server-stop.sh # only if your are restarting
+Edit server properties on each node:
+```bash
+vi kafka/config/server.properties
+```
 
+Update the following settings:
+```properties
+# Unique Broker ID for each node
+broker.id=<node_id>
+
+# ZooKeeper Connection String
+zookeeper.connect=<node1_internalip>:2181,<node2_internalip>:2181,<node3_internalip>:2181
+
+# Listeners Configuration
+listeners=PLAINTEXT://<node_internalip>:9092
+advertised.listeners=PLAINTEXT://<node_internalip>:9092
+```
+
+## Step 5: Start ZooKeeper
+
+```bash
+# Stop if already running (optional)
+~/kafka/bin/zookeeper-server-stop.sh
+
+# Start ZooKeeper
 ~/kafka/bin/zookeeper-server-start.sh -daemon ~/kafka/config/zookeeper.properties
-tail -f ~/kafka/logs/zookeeper.out # To watch the logs
 
+# Watch logs
+tail -f ~/kafka/logs/zookeeper.out
+```
 
-Step4: Change the server.properties on each node
-broker.id= <id>
+## Step 6: Start Kafka Brokers
 
-<internal_ips>
-zookeeper.connect=10.128.0.5:2181,10.128.0.3:2181,10.128.0.7:2181
-
-listeners=PLAINTEXT://<internal_ip of the node>:9092 
-advertised.listeners=PLAINTEXT://<internal_ip of the node>:9092
-
-Step5: Run kafka
+```bash
+# Stop if already running (optional)
 ~/kafka/bin/kafka-server-stop.sh
 
+# Start Kafka
 ~/kafka/bin/kafka-server-start.sh -daemon ~/kafka/config/server.properties
+```
 
-# To view that brokers are connected and working
-~/kafka/bin/zookeeper-shell.sh <internal_ip>:2181
-ls /brokers/ids
+## Step 7: Verify Cluster Setup
 
+### Check Connected Brokers
+```bash
+~/kafka/bin/zookeeper-shell.sh <node1_internalip>:2181 ls /brokers/ids
+```
 
-Step 6:
-Create topics and replicate on a single node:
-~/kafka/bin/kafka-topics.sh --create --topic test-topic --bootstrap-server <internal_ip>:9092 --partitions 1 --replication-factor 1
+### Create Test Topic
+```bash
+~/kafka/bin/kafka-topics.sh --create \
+  --topic test-topic \
+  --bootstrap-server <node1_internalip>:9092 \
+  --partitions 1 \
+  --replication-factor 3
+```
 
-#Now verify the topic replication on each node
-~/kafka/bin/kafka-topics.sh --list --bootstrap-server <internal_ip>:9092
+### List Topics
+```bash
+~/kafka/bin/kafka-topics.sh --list --bootstrap-server <node1_internalip>:9092
+```
 
+## Troubleshooting
 
-
-Step 7: 
-Run  producer and consumer on separate nodes and verify the repication 
-~/kafka/bin/kafka-topics.sh --list --bootstrap-server <internal_ip>:9092
-
-
-Incase need to restart:
-
+### Restart Cluster
+```bash
+# Clean logs
 rm ~/kafka/logs/*
-~/kafka/bin/zookeeper-server-stop.sh # only if your are restarting
 
+# Stop services
+~/kafka/bin/zookeeper-server-stop.sh
 ~/kafka/bin/kafka-server-stop.sh
+
+# Restart
 ~/kafka/bin/zookeeper-server-start.sh -daemon ~/kafka/config/zookeeper.properties
-
 ~/kafka/bin/kafka-server-start.sh -daemon ~/kafka/config/server.properties
+
+# Check logs
 tail -f ~/kafka/logs/server.log
+```
 
-10.128.0.5:9092,10.128.0.3:9092,10.128.0.7:9092
+## Notes
+- Replace `<username>` with your Linux username
+- Replace `<node_id>` with 1, 2, or 3 for each node
+- Replace `<node_internalip>` with actual internal IP addresses
+- This is a basic setup and should be further secured for production environments
 
+## Recommended Next Steps
+- Configure authentication
+- Set up SSL/TLS
+- Implement network security
+- Configure log retention and compaction
 
+## License
+[Your License Here]
 
-
-
-
-
-
-
-
+## Contributing
+Contributions are welcome! Please submit a pull request or open an issue.
