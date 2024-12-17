@@ -153,14 +153,3 @@ tail -f ~/kafka/logs/server.log
 - Replace `<node_internalip>` with actual internal IP addresses
 - This is a basic setup and should be further secured for production environments
 
-## Recommended Next Steps
-- Configure authentication
-- Set up SSL/TLS
-- Implement network security
-- Configure log retention and compaction
-
-## License
-[Your License Here]
-
-## Contributing
-Contributions are welcome! Please submit a pull request or open an issue.
